@@ -35,9 +35,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import edu.byu.cs.client.R;
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetStoryTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetUserTask;
-import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -124,7 +124,7 @@ public class StoryFragment extends Fragment {
             userName = itemView.findViewById(R.id.statusName);
             post = itemView.findViewById(R.id.statusPost);
             datetime = itemView.findViewById(R.id.statusDatetime);
-            
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

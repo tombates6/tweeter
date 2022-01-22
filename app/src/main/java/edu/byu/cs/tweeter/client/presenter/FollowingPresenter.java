@@ -41,13 +41,10 @@ public class FollowingPresenter {
             isLoading = true;
             view.setLoadingFooter(true);
             followService.getFollowing(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastFollowee, new GetFollowingObserver());
-
         }
     }
 
-    public interface View {
-        void displayErrorMessage(String message);
-
+    public interface View extends BaseView {
         void setLoadingFooter(boolean loading);
 
         void addFollowees(List<User> followees);

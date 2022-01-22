@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowingTask;
+import edu.byu.cs.tweeter.client.presenter.BaseObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -22,12 +23,8 @@ public class FollowService {
         executor.execute(getFollowingTask);
     }
 
-    public interface GetFollowingObserver {
+    public interface GetFollowingObserver extends BaseObserver {
         void handleSuccess(List<User> followees, boolean hasMorePages);
-
-        void handleFailure(String message);
-
-        void handleException(Exception exception);
     }
 
     /**
@@ -48,7 +45,6 @@ public class FollowService {
                 List<User> followees = (List<User>) msg.getData().getSerializable(GetFollowingTask.FOLLOWEES_KEY);
                 boolean hasMorePages = msg.getData().getBoolean(GetFollowingTask.MORE_PAGES_KEY);
                 observer.handleSuccess(followees, hasMorePages);
-
             } else if (msg.getData().containsKey(GetFollowingTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(GetFollowingTask.MESSAGE_KEY);
                 observer.handleFailure(message);
