@@ -16,19 +16,11 @@ import edu.byu.cs.tweeter.util.Pair;
 /**
  * Background task that retrieves a page of other users being followed by a specified user.
  */
-public class GetFollowingTask implements Runnable {
+public class GetFollowingTask extends AuthorizedTask {
     private static final String LOG_TAG = "GetFollowingTask";
 
-    public static final String SUCCESS_KEY = "success";
     public static final String FOLLOWEES_KEY = "followees";
     public static final String MORE_PAGES_KEY = "more-pages";
-    public static final String MESSAGE_KEY = "message";
-    public static final String EXCEPTION_KEY = "exception";
-
-    /**
-     * Auth token for logged-in user.
-     */
-    private final AuthToken authToken;
     /**
      * The user whose following is being retrieved.
      * (This can be any user, not just the currently logged-in user.)
@@ -43,77 +35,34 @@ public class GetFollowingTask implements Runnable {
      * This allows the new page to begin where the previous page ended.
      */
     private final User lastFollowee;
-    /**
-     * Message handler that will receive task results.
-     */
-    private final Handler messageHandler;
+
+    List<User> followees;
+    boolean hasMorePages;
 
     public GetFollowingTask(AuthToken authToken, User targetUser, int limit, User lastFollowee,
                             Handler messageHandler) {
-        this.authToken = authToken;
+        super(messageHandler, authToken);
         this.targetUser = targetUser;
         this.limit = limit;
         this.lastFollowee = lastFollowee;
-        this.messageHandler = messageHandler;
     }
 
     @Override
-    public void run() {
-        try {
-            Pair<List<User>, Boolean> pageOfUsers = getFollowees();
+    protected void runTask() {
+        Pair<List<User>, Boolean> pageOfUsers = getFollowees();
 
-            List<User> followees = pageOfUsers.getFirst();
-            boolean hasMorePages = pageOfUsers.getSecond();
-
-            sendSuccessMessage(followees, hasMorePages);
-
-        } catch (Exception ex) {
-            Log.e(LOG_TAG, "Failed to get followees", ex);
-            sendExceptionMessage(ex);
-        }
+        followees = pageOfUsers.getFirst();
+        hasMorePages = pageOfUsers.getSecond();
+        // TODO milestone 3
     }
 
-    private FakeData getFakeData() {
-        return new FakeData();
+    @Override
+    protected void loadMessageBundle(Bundle msgBundle) {
+        msgBundle.putSerializable(FOLLOWEES_KEY, (Serializable) getFollowees());
+        msgBundle.putBoolean(MORE_PAGES_KEY, hasMorePages);
     }
 
     private Pair<List<User>, Boolean> getFollowees() {
         return getFakeData().getPageOfUsers(lastFollowee, limit, targetUser);
     }
-
-
-    private void sendSuccessMessage(List<User> followees, boolean hasMorePages) {
-        Bundle msgBundle = new Bundle();
-        msgBundle.putBoolean(SUCCESS_KEY, true);
-        msgBundle.putSerializable(FOLLOWEES_KEY, (Serializable) followees);
-        msgBundle.putBoolean(MORE_PAGES_KEY, hasMorePages);
-
-        Message msg = Message.obtain();
-        msg.setData(msgBundle);
-
-        messageHandler.sendMessage(msg);
-    }
-
-    private void sendFailedMessage(String message) {
-        Bundle msgBundle = new Bundle();
-        msgBundle.putBoolean(SUCCESS_KEY, false);
-        msgBundle.putString(MESSAGE_KEY, message);
-
-        Message msg = Message.obtain();
-        msg.setData(msgBundle);
-
-        messageHandler.sendMessage(msg);
-    }
-
-    private void sendExceptionMessage(Exception exception) {
-        Bundle msgBundle = new Bundle();
-        msgBundle.putBoolean(SUCCESS_KEY, false);
-        msgBundle.putSerializable(EXCEPTION_KEY, exception);
-
-        Message msg = Message.obtain();
-        msg.setData(msgBundle);
-
-        messageHandler.sendMessage(msg);
-    }
-
 }
