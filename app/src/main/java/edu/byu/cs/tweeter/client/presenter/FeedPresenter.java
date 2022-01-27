@@ -1,6 +1,8 @@
 package edu.byu.cs.tweeter.client.presenter;
 
 
+import android.util.Log;
+
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -13,6 +15,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class FeedPresenter {
 
+    private static final String LOG_TAG = "FeedFragment";
     private static final int PAGE_SIZE = 10;
     private Status lastStatus;
     private boolean hasMorePages;
@@ -67,6 +70,7 @@ public class FeedPresenter {
 
         @Override
         public void handleFailure(String message) {
+            Log.e(LOG_TAG, message);
             isLoading = false;
             view.setLoadingFooter(false);
             view.displayErrorMessage("Failed to get feed: " + message);
@@ -74,6 +78,7 @@ public class FeedPresenter {
 
         @Override
         public void handleException(Exception exception) {
+            Log.e(LOG_TAG, exception.getMessage());
             isLoading = false;
             view.setLoadingFooter(false);
             view.displayErrorMessage("Failed to get feed because of exception: " + exception.getMessage());

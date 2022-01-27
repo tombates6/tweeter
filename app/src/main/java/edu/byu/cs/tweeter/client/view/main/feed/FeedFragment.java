@@ -48,7 +48,6 @@ import edu.byu.cs.tweeter.model.domain.User;
  * Implements the "Feed" tab.
  */
 public class FeedFragment extends Fragment implements UserPresenter.View, FeedPresenter.View {
-    private static final String LOG_TAG = "FeedFragment";
     private static final String USER_KEY = "UserKey";
 
     private static final int LOADING_DATA_VIEW = 0;
@@ -93,6 +92,7 @@ public class FeedFragment extends Fragment implements UserPresenter.View, FeedPr
 
         userPresenter = new UserPresenter(this);
         feedPresenter = new FeedPresenter(this);
+        feedPresenter.loadMoreItems(userPresenter.getUser());
 
         return view;
     }
@@ -105,7 +105,7 @@ public class FeedFragment extends Fragment implements UserPresenter.View, FeedPr
     @Override
     public void setLoadingFooter(boolean loading) {
         if (loading) {
-                feedRecyclerViewAdapter.addLoadingFooter();
+            feedRecyclerViewAdapter.addLoadingFooter();
         }
         else feedRecyclerViewAdapter.removeLoadingFooter();
     }
@@ -117,7 +117,9 @@ public class FeedFragment extends Fragment implements UserPresenter.View, FeedPr
 
     @Override
     public void switchUser(User user) {
-        // TODO figure out what do do with this override
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
+        startActivity(intent);
     }
 
     /**
@@ -145,12 +147,9 @@ public class FeedFragment extends Fragment implements UserPresenter.View, FeedPr
             post = itemView.findViewById(R.id.statusPost);
             datetime = itemView.findViewById(R.id.statusDatetime);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    userPresenter.getUserProfile(userAlias.getText().toString());
-                    Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
-                }
+            itemView.setOnClickListener(view -> {
+                userPresenter.getUserProfile(userAlias.getText().toString());
+                Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
             });
         }
 
@@ -215,13 +214,6 @@ public class FeedFragment extends Fragment implements UserPresenter.View, FeedPr
     private class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedHolder> {
 
         private final List<Status> feed = new ArrayList<>();
-
-        /**
-         * Creates an instance and loads the first page of feed data.
-         */
-        FeedRecyclerViewAdapter() {
-            loadMoreItems();
-        }
 
         /**
          * Adds new statuses to the list from which the RecyclerView retrieves the statuses it displays
