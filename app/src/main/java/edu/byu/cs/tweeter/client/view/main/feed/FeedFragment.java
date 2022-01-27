@@ -37,6 +37,8 @@ import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.backgroundTask.GetFeedTask;
 import edu.byu.cs.tweeter.client.model.backgroundTask.GetUserTask;
+import edu.byu.cs.tweeter.client.presenter.FeedPresenter;
+import edu.byu.cs.tweeter.client.presenter.FollowingPresenter;
 import edu.byu.cs.tweeter.client.presenter.UserPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -45,16 +47,15 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Implements the "Feed" tab.
  */
-public class FeedFragment extends Fragment implements UserPresenter.View {
+public class FeedFragment extends Fragment implements UserPresenter.View, FeedPresenter.View {
     private static final String LOG_TAG = "FeedFragment";
     private static final String USER_KEY = "UserKey";
 
     private static final int LOADING_DATA_VIEW = 0;
     private static final int ITEM_VIEW = 1;
 
-    private static final int PAGE_SIZE = 10;
-
     private UserPresenter userPresenter;
+    private FeedPresenter feedPresenter;
 
     private FeedRecyclerViewAdapter feedRecyclerViewAdapter;
 
@@ -91,18 +92,32 @@ public class FeedFragment extends Fragment implements UserPresenter.View {
         feedRecyclerView.addOnScrollListener(new FeedRecyclerViewPaginationScrollListener(layoutManager));
 
         userPresenter = new UserPresenter(this);
+        feedPresenter = new FeedPresenter(this);
 
         return view;
     }
 
     @Override
     public void displayErrorMessage(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+    }
 
+    @Override
+    public void setLoadingFooter(boolean loading) {
+        if (loading) {
+                feedRecyclerViewAdapter.addLoadingFooter();
+        }
+        else feedRecyclerViewAdapter.removeLoadingFooter();
+    }
+
+    @Override
+    public void addStatuses(List<Status> statuses) {
+        feedRecyclerViewAdapter.addItems(statuses);
     }
 
     @Override
     public void switchUser(User user) {
-
+        // TODO figure out what do do with this override
     }
 
     /**
@@ -200,10 +215,6 @@ public class FeedFragment extends Fragment implements UserPresenter.View {
     private class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedHolder> {
 
         private final List<Status> feed = new ArrayList<>();
-        private Status lastStatus;
-
-        private boolean hasMorePages;
-        private boolean isLoading = false;
 
         /**
          * Creates an instance and loads the first page of feed data.
@@ -281,7 +292,7 @@ public class FeedFragment extends Fragment implements UserPresenter.View {
          */
         @Override
         public void onBindViewHolder(@NonNull FeedHolder feedHolder, int position) {
-            if (!isLoading) {
+            if (!feedPresenter.isLoading()) {
                 feedHolder.bindStatus(feed.get(position));
             }
         }
@@ -305,7 +316,7 @@ public class FeedFragment extends Fragment implements UserPresenter.View {
          */
         @Override
         public int getItemViewType(int position) {
-            return (position == feed.size() - 1 && isLoading) ? LOADING_DATA_VIEW : ITEM_VIEW;
+            return (position == feed.size() - 1 && feedPresenter.isLoading()) ? LOADING_DATA_VIEW : ITEM_VIEW;
         }
 
         /**
@@ -313,15 +324,7 @@ public class FeedFragment extends Fragment implements UserPresenter.View {
          * data.
          */
         void loadMoreItems(){
-            if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
-                isLoading = true;
-                addLoadingFooter();
-
-                GetFeedTask getFeedTask = new GetFeedTask(Cache.getInstance().getCurrUserAuthToken(),
-                        userPresenter.getUser(), PAGE_SIZE, lastStatus, new GetFeedHandler());
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                executor.execute(getFeedTask);
-            }
+            feedPresenter.loadMoreItems(userPresenter.getUser());
         }
 
         /**
@@ -342,34 +345,6 @@ public class FeedFragment extends Fragment implements UserPresenter.View {
          */
         private void removeLoadingFooter() {
             removeItem(feed.get(feed.size() - 1));
-        }
-
-
-        /**
-         * Message handler (i.e., observer) for GetFeedTask.
-         */
-        private class GetFeedHandler extends Handler {
-            @Override
-            public void handleMessage(@NonNull Message msg) {
-                isLoading = false;
-                removeLoadingFooter();
-
-                boolean success = msg.getData().getBoolean(GetFeedTask.SUCCESS_KEY);
-                if (success) {
-                    List<Status> statuses = (List<Status>) msg.getData().getSerializable(GetFeedTask.STATUSES_KEY);
-                    hasMorePages = msg.getData().getBoolean(GetFeedTask.MORE_PAGES_KEY);
-
-                    lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
-
-                    feedRecyclerViewAdapter.addItems(statuses);
-                } else if (msg.getData().containsKey(GetFeedTask.MESSAGE_KEY)) {
-                    String message = msg.getData().getString(GetFeedTask.MESSAGE_KEY);
-                    Toast.makeText(getContext(), "Failed to get feed: " + message, Toast.LENGTH_LONG).show();
-                } else if (msg.getData().containsKey(GetFeedTask.EXCEPTION_KEY)) {
-                    Exception ex = (Exception) msg.getData().getSerializable(GetFeedTask.EXCEPTION_KEY);
-                    Toast.makeText(getContext(), "Failed to get feed because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
         }
     }
 
@@ -407,7 +382,7 @@ public class FeedFragment extends Fragment implements UserPresenter.View {
             int totalItemCount = layoutManager.getItemCount();
             int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-            if (!feedRecyclerViewAdapter.isLoading && feedRecyclerViewAdapter.hasMorePages) {
+            if (!feedPresenter.isLoading() && feedPresenter.hasMorePages()) {
                 if ((visibleItemCount + firstVisibleItemPosition) >=
                         totalItemCount && firstVisibleItemPosition >= 0) {
                     // Run this code later on the UI thread
