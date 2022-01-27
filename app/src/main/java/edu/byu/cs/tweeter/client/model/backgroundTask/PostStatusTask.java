@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.client.model.service.backgroundTask;
+package edu.byu.cs.tweeter.client.model.backgroundTask;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -6,16 +6,15 @@ import android.os.Message;
 import android.util.Log;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.domain.Status;
 
 /**
- * Background task that queries how many other users a specified user is following.
+ * Background task that posts a new status sent by a user.
  */
-public class GetFollowingCountTask implements Runnable {
-    private static final String LOG_TAG = "GetFollowingCountTask";
+public class PostStatusTask implements Runnable {
+    private static final String LOG_TAG = "PostStatusTask";
 
     public static final String SUCCESS_KEY = "success";
-    public static final String COUNT_KEY = "count";
     public static final String MESSAGE_KEY = "message";
     public static final String EXCEPTION_KEY = "exception";
 
@@ -24,18 +23,18 @@ public class GetFollowingCountTask implements Runnable {
      */
     private final AuthToken authToken;
     /**
-     * The user whose following count is being retrieved.
-     * (This can be any user, not just the currently logged-in user.)
+     * The new status being sent. Contains all properties of the status,
+     * including the identity of the user sending the status.
      */
-    private final User targetUser;
+    private final Status status;
     /**
      * Message handler that will receive task results.
      */
     private final Handler messageHandler;
 
-    public GetFollowingCountTask(AuthToken authToken, User targetUser, Handler messageHandler) {
+    public PostStatusTask(AuthToken authToken, Status status, Handler messageHandler) {
         this.authToken = authToken;
-        this.targetUser = targetUser;
+        this.status = status;
         this.messageHandler = messageHandler;
     }
 
@@ -43,7 +42,7 @@ public class GetFollowingCountTask implements Runnable {
     public void run() {
         try {
 
-            sendSuccessMessage(20);
+            sendSuccessMessage();
 
         } catch (Exception ex) {
             Log.e(LOG_TAG, ex.getMessage(), ex);
@@ -51,10 +50,9 @@ public class GetFollowingCountTask implements Runnable {
         }
     }
 
-    private void sendSuccessMessage(int count) {
+    private void sendSuccessMessage() {
         Bundle msgBundle = new Bundle();
         msgBundle.putBoolean(SUCCESS_KEY, true);
-        msgBundle.putInt(COUNT_KEY, count);
 
         Message msg = Message.obtain();
         msg.setData(msgBundle);
