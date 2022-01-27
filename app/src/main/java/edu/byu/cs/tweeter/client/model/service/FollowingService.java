@@ -14,7 +14,7 @@ import edu.byu.cs.tweeter.client.presenter.BaseObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowService {
+public class FollowingService {
     public void getFollowing(AuthToken currUserAuthToken, User user, int pageSize, User lastFollowee, GetFollowingObserver getFollowingObserver) {
 
         GetFollowingTask getFollowingTask = new GetFollowingTask(currUserAuthToken,
