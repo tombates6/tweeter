@@ -43,11 +43,11 @@ import edu.byu.cs.tweeter.model.domain.User;
  * Implements the "Followers" tab.
  */
 public class FollowersFragment extends Fragment implements UserPresenter.View, FollowersPresenter.View {
-    private static final String LOG_TAG = "FollowingFragment";
+    private static final String LOG_TAG = "FollowersFragment";
     private static final String USER_KEY = "UserKey";
     private static final int LOADING_DATA_VIEW = 0;
     private static final int ITEM_VIEW = 1;
-    private FollowersFragment.FollowersRecyclerViewAdapter followersRecyclerViewAdapter;
+    private FollowersRecyclerViewAdapter followersRecyclerViewAdapter;
     private UserPresenter userPresenter;
     private FollowersPresenter followersPresenter;
 
@@ -162,13 +162,6 @@ public class FollowersFragment extends Fragment implements UserPresenter.View, F
     private class FollowersRecyclerViewAdapter extends RecyclerView.Adapter<FollowersHolder> {
 
         private final List<User> users = new ArrayList<>();
-
-        /**
-         * Creates an instance and loads the first page of following data.
-         */
-        FollowersRecyclerViewAdapter() {
-            loadMoreItems();
-        }
 
         /**
          * Adds new users to the list from which the RecyclerView retrieves the users it displays
