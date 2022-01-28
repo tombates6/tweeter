@@ -4,12 +4,9 @@ package edu.byu.cs.tweeter.client.presenter;
 import android.util.Log;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
-import edu.byu.cs.tweeter.client.model.backgroundTask.GetFeedTask;
-import edu.byu.cs.tweeter.client.model.service.FeedService;
+import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -21,10 +18,10 @@ public class FeedPresenter {
     private boolean hasMorePages;
     private boolean isLoading = false;
     private final FeedPresenter.View view;
-    private final FeedService feedService;
+    private final StatusService feedService;
 
     public FeedPresenter(FeedPresenter.View view) {
-        this.feedService = new FeedService();
+        this.feedService = new StatusService();
         this.view = view;
     }
     public boolean hasMorePages() {
@@ -37,10 +34,6 @@ public class FeedPresenter {
 
     public boolean isLoading() {
         return isLoading;
-    }
-
-    public void setLoading(boolean loading) {
-        isLoading = loading;
     }
 
     public void loadMoreItems(User user) {
@@ -57,7 +50,7 @@ public class FeedPresenter {
         void addStatuses(List<Status> statuses);
     }
 
-    public class GetFeedObserver implements FeedService.GetFeedObserver {
+    public class GetFeedObserver implements StatusService.GetStatusObserver {
 
         @Override
         public void handleSuccess(List<Status> statuses, boolean hasMorePages) {

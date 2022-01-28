@@ -5,7 +5,7 @@ import android.util.Log;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
-import edu.byu.cs.tweeter.client.model.service.StoryService;
+import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -13,7 +13,7 @@ public class StoryPresenter {
     private static final String LOG_TAG = "StoryFragment";
     private static final int PAGE_SIZE = 10;
     private final View view;
-    private final StoryService storyService;
+    private final StatusService storyService;
     private Status lastStatus;
 
     private boolean hasMorePages;
@@ -21,7 +21,7 @@ public class StoryPresenter {
 
     public StoryPresenter(View view) {
         this.view = view;
-        this.storyService = new StoryService();
+        this.storyService = new StatusService();
     }
 
     public boolean hasMorePages() {
@@ -51,7 +51,7 @@ public class StoryPresenter {
         void addStatuses(List<Status> statuses);
     }
 
-    public class GetStoryObserver implements StoryService.GetStoryObserver {
+    public class GetStoryObserver implements StatusService.GetStatusObserver {
 
         @Override
         public void handleSuccess(List<Status> statuses, boolean hasMorePages) {
