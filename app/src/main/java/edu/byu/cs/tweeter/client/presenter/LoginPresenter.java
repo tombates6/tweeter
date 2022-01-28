@@ -1,20 +1,19 @@
 package edu.byu.cs.tweeter.client.presenter;
 
 import android.util.Log;
-import android.widget.EditText;
 
-import edu.byu.cs.tweeter.client.model.service.LoginService;
+import edu.byu.cs.tweeter.client.model.service.AuthService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class LoginPresenter {
     private static final String LOG_TAG = "LoginFragment";
     private View view;
-    private LoginService loginService;
+    private AuthService loginService;
 
     public LoginPresenter(View view) {
         this.view = view;
-        this.loginService = new LoginService();
+        this.loginService = new AuthService();
     }
 
     public interface View extends BaseView {
@@ -37,7 +36,7 @@ public class LoginPresenter {
         }
     }
 
-    public class LoginObserver implements LoginService.LoginObserver {
+    public class LoginObserver implements AuthService.AuthObserver {
 
         @Override
         public void handleSuccess(User loggedInUser, AuthToken authToken) {

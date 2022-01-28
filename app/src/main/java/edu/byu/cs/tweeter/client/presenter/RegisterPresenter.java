@@ -3,14 +3,11 @@ package edu.byu.cs.tweeter.client.presenter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
-import android.widget.EditText;
-import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Base64;
 
-import edu.byu.cs.tweeter.client.model.service.LoginService;
-import edu.byu.cs.tweeter.client.model.service.RegisterService;
+import edu.byu.cs.tweeter.client.model.service.AuthService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -18,11 +15,11 @@ public class RegisterPresenter {
     private static final String LOG_TAG = "RegisterFragment";
 
     private final View view;
-    private final RegisterService registerService;
+    private final AuthService registerService;
 
     public RegisterPresenter(View view) {
         this.view = view;
-        this.registerService = new RegisterService();
+        this.registerService = new AuthService();
     }
 
     public void register(String firstName, String lastName, String alias, String password, BitmapDrawable imageToUpload) {
@@ -69,7 +66,7 @@ public class RegisterPresenter {
         }
     }
 
-    public class RegisterObserver implements RegisterService.RegisterObserver {
+    public class RegisterObserver implements AuthService.AuthObserver {
 
         @Override
         public void handleSuccess(User loggedInUser, AuthToken authToken) {
