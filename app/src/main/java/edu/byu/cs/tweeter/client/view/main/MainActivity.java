@@ -123,17 +123,19 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
                 followButton.setEnabled(false);
 
                 if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {
-                    UnfollowTask unfollowTask = new UnfollowTask(Cache.getInstance().getCurrUserAuthToken(),
-                            selectedUser, new UnfollowHandler());
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    executor.execute(unfollowTask);
+//                    FollowingService
+//                    UnfollowTask unfollowTask = new UnfollowTask(Cache.getInstance().getCurrUserAuthToken(),
+//                            selectedUser, new UnfollowHandler());
+//                    ExecutorService executor = Executors.newSingleThreadExecutor();
+//                    executor.execute(unfollowTask);
 
                     Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
                 } else {
-                    FollowTask followTask = new FollowTask(Cache.getInstance().getCurrUserAuthToken(),
-                            selectedUser, new FollowHandler());
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    executor.execute(followTask);
+//                    FollowingService
+//                    FollowTask followTask = new FollowTask(Cache.getInstance().getCurrUserAuthToken(),
+//                            selectedUser, new FollowHandler());
+//                    ExecutorService executor = Executors.newSingleThreadExecutor();
+//                    executor.execute(followTask);
 
                     Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
                 }
@@ -164,33 +166,36 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         }
     }
 
-    public void logoutUser() {
-        //Revert to login screen.
-        Intent intent = new Intent(this, LoginActivity.class);
-        //Clear everything so that the main activity is recreated with the login page.
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        //Clear user data (cached data).
-        Cache.getInstance().clearCache();
-        startActivity(intent);
-    }
+//        LoginService
+//    public void logoutUser() {
+//        //Revert to login screen.
+//        Intent intent = new Intent(this, LoginActivity.class);
+//        //Clear everything so that the main activity is recreated with the login page.
+//        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        //Clear user data (cached data).
+//        Cache.getInstance().clearCache();
+//        startActivity(intent);
+//    }
 
     @Override
     public void onStatusPosted(String post) {
         postingToast = Toast.makeText(this, "Posting Status...", Toast.LENGTH_LONG);
         postingToast.show();
 
-        try {
-            Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
-            PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
-                    newStatus, new PostStatusHandler());
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            executor.execute(statusTask);
-        } catch (Exception ex) {
-            Log.e(LOG_TAG, ex.getMessage(), ex);
-            Toast.makeText(this, "Failed to post the status because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-        }
+//            StatusService
+//        try {
+//            Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
+//            PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
+//                    newStatus, new PostStatusHandler());
+//            ExecutorService executor = Executors.newSingleThreadExecutor();
+//            executor.execute(statusTask);
+//        } catch (Exception ex) {
+//            Log.e(LOG_TAG, ex.getMessage(), ex);
+//            Toast.makeText(this, "Failed to post the status because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
+//        }
     }
 
+    // Maybe this goes in the presenter?
     public String getFormattedDateTime() throws ParseException {
         SimpleDateFormat userFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         SimpleDateFormat statusFormat = new SimpleDateFormat("MMM d yyyy h:mm aaa");
@@ -198,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         return statusFormat.format(userFormat.parse(LocalDate.now().toString() + " " + LocalTime.now().toString().substring(0, 8)));
     }
 
+    // MainPresenter
     public List<String> parseURLs(String post) {
         List<String> containedUrls = new ArrayList<>();
         for (String word : post.split("\\s")) {
@@ -214,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         return containedUrls;
     }
 
+    // MainPresenter
     public List<String> parseMentions(String post) {
         List<String> containedMentions = new ArrayList<>();
 
@@ -229,6 +236,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         return containedMentions;
     }
 
+    // MainPresenter
     public int findUrlEndIndex(String word) {
         if (word.contains(".com")) {
             int index = word.indexOf(".com");
@@ -255,6 +263,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         }
     }
 
+    // FollowService
     public void updateSelectedUserFollowingAndFollowers() {
         ExecutorService executor = Executors.newFixedThreadPool(2);
 
@@ -269,6 +278,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         executor.execute(followingCountTask);
     }
 
+    //FollowService
     public void updateFollowButton(boolean removed) {
         // If follow relationship was removed.
         if (removed) {
@@ -282,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     // LogoutHandler
-
+    // LoginService
     private class LogoutHandler extends Handler {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -301,7 +311,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     // GetFollowersCountHandler
-
+    // FollowService
     private class GetFollowersCountHandler extends Handler {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -320,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     // GetFollowingCountHandler
-
+    // FollowService
     private class GetFollowingCountHandler extends Handler {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -339,7 +349,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     // IsFollowerHandler
-
+    // FollowService
     private class IsFollowerHandler extends Handler {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -367,7 +377,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     // FollowHandler
-
+// FollowService
     private class FollowHandler extends Handler {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -388,7 +398,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     // UnfollowHandler
-
+// FollowService
     private class UnfollowHandler extends Handler {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -409,7 +419,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     // PostStatusHandler
-
+// StatusService
     private class PostStatusHandler extends Handler {
         @Override
         public void handleMessage(@NonNull Message msg) {
