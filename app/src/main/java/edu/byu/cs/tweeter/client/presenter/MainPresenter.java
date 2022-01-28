@@ -1,5 +1,7 @@
 package edu.byu.cs.tweeter.client.presenter;
 
+import android.util.Log;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -7,9 +9,13 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.AuthService;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.Status;
+import edu.byu.cs.tweeter.model.domain.User;
 
 public class MainPresenter {
     private static final String LOG_TAG = "MainActivity";
@@ -19,33 +25,43 @@ public class MainPresenter {
     private AuthService authService;
 
     public MainPresenter(View view) {
+
         this.view = view;
+        this.followService = new FollowService();
+        this.statusService = new StatusService();
+        this.authService = new AuthService();
     }
 
 
     public interface View extends BaseView {
         void logout();
+        void setFollowing(boolean following);
+        void post();
+        void isFollower();
+        void setFollowingCount();
+        void setFollowersCount();
     }
 
 
-    public void getIsFollower() {
-        followService.isFollower();
+    public void getIsFollower(User selectedUser) {
+        followService.isFollower(Cache.getInstance().getCurrUserAuthToken(), selectedUser, new IsFollowingObserver());
     }
 
-    public void follow() {
-        followService.follow();
+    public void follow(User selectedUser) {
+        followService.follow(Cache.getInstance().getCurrUserAuthToken(), selectedUser, new FollowObserver());
     }
 
-    public void unfollow() {
-        followService.unfollow();
+    public void unfollow(User selectedUser) {
+        followService.unfollow(Cache.getInstance().getCurrUserAuthToken(), selectedUser, new UnfollowObserver());
     }
 
-    public void postStatus() {
-        statusService.postStatus();
+    public void postStatus(String post) throws ParseException {
+        Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
+        statusService.postStatus(Cache.getInstance().getCurrUserAuthToken(), newStatus, new PostStatusObserver());
     }
 
     public void logout() {
-        authService.logout();
+        authService.logout(Cache.getInstance().getCurrUserAuthToken(), new LogoutObserver());
     }
 
     public int findUrlEndIndex(String word) {
@@ -106,17 +122,8 @@ public class MainPresenter {
     }
 
     public void updateSelectedUserFollowingAndFollowers() {
-//        ExecutorService executor = Executors.newFixedThreadPool(2);
-
-        // Get count of most recently selected user's followers.
-//        GetFollowersCountTask followersCountTask = new GetFollowersCountTask(Cache.getInstance().getCurrUserAuthToken(),
-//                selectedUser, new GetFollowersCountHandler());
-//        executor.execute(followersCountTask);
-
-//        // Get count of most recently selected user's followees (who they are following)
-//        GetFollowingCountTask followingCountTask = new GetFollowingCountTask(Cache.getInstance().getCurrUserAuthToken(),
-//                selectedUser, new GetFollowingCountHandler());
-//        executor.execute(followingCountTask);
+        followService.getFollowersCount(Cache.getInstance().getCurrUserAuthToken(), Cache.getInstance().getCurrUser(), new GetFollowersCountObserver());
+        followService.getFollowingCount(Cache.getInstance().getCurrUserAuthToken(), Cache.getInstance().getCurrUser(), new GetFollowingCountObserver());
     }
 
     public String getFormattedDateTime() throws ParseException {
@@ -130,17 +137,19 @@ public class MainPresenter {
 
         @Override
         public void handleSuccess() {
-
+            view.logout();
         }
 
         @Override
         public void handleFailure(String message) {
-
+            Log.e(LOG_TAG, message);
+            view.displayErrorMessage("Failed to logout: " + message);
         }
 
         @Override
         public void handleException(Exception exception) {
-
+            Log.e(LOG_TAG, exception.getMessage());
+            view.displayErrorMessage("Failed to logout because of exception: " + exception.getMessage());
         }
     }
 
@@ -148,35 +157,59 @@ public class MainPresenter {
 
         @Override
         public void handleSuccess() {
-
+            view.post();
         }
 
         @Override
         public void handleFailure(String message) {
-
+            Log.e(LOG_TAG, message);
+            view.displayErrorMessage("Failed to post status: " + message);
         }
 
         @Override
         public void handleException(Exception exception) {
-
+            Log.e(LOG_TAG, exception.getMessage());
+            view.displayErrorMessage("Failed to post status because of exception: " + exception.getMessage());
         }
     }
 
-    public class GetCountObserver implements FollowService.GetCountObserver {
+    public class GetFollowingCountObserver implements FollowService.GetCountObserver {
 
         @Override
         public void handleSuccess(int count) {
-
+            view.setFollowingCount();
         }
 
         @Override
         public void handleFailure(String message) {
-
+            Log.e(LOG_TAG, message);
+            view.displayErrorMessage("Failed to get following count: " + message);
         }
 
         @Override
         public void handleException(Exception exception) {
+            Log.e(LOG_TAG, exception.getMessage());
+            view.displayErrorMessage("Failed to get following count because of exception: " + exception.getMessage());
+        }
+    }
 
+    public class GetFollowersCountObserver implements FollowService.GetCountObserver {
+
+        @Override
+        public void handleSuccess(int count) {
+            view.setFollowersCount();
+        }
+
+        @Override
+        public void handleFailure(String message) {
+            Log.e(LOG_TAG, message);
+            view.displayErrorMessage("Failed to get followers count: " + message);
+        }
+
+        @Override
+        public void handleException(Exception exception) {
+            Log.e(LOG_TAG, exception.getMessage());
+            view.displayErrorMessage("Failed to get followers count because of exception: " + exception.getMessage());
         }
     }
 
@@ -184,35 +217,59 @@ public class MainPresenter {
 
         @Override
         public void handleSuccess(boolean isFollower) {
-
+            view.isFollower();
         }
 
         @Override
         public void handleFailure(String message) {
-
+            Log.e(LOG_TAG, message);
+            view.displayErrorMessage("Failed to determine following relationship: " + message);
         }
 
         @Override
         public void handleException(Exception exception) {
-
+            Log.e(LOG_TAG, exception.getMessage());
+            view.displayErrorMessage("Failed to determine following relationship because of exception: " + exception.getMessage());
         }
     }
 
-    public class FollowUnfollowObserver implements FollowService.FollowUnfollowObserver {
+    public class UnfollowObserver implements FollowService.FollowUnfollowObserver {
 
         @Override
         public void handleSuccess() {
-
+            view.setFollowing(false);
         }
 
         @Override
         public void handleFailure(String message) {
-
+            Log.e(LOG_TAG, message);
+            view.displayErrorMessage("Failed to unfollow: " + message);
         }
 
         @Override
         public void handleException(Exception exception) {
+            Log.e(LOG_TAG, exception.getMessage());
+            view.displayErrorMessage("Failed to unfollow because of exception: " + exception.getMessage());
+        }
+    }
 
+    public class FollowObserver implements FollowService.FollowUnfollowObserver {
+
+        @Override
+        public void handleSuccess() {
+            view.setFollowing(true);
+        }
+
+        @Override
+        public void handleFailure(String message) {
+            Log.e(LOG_TAG, message);
+            view.displayErrorMessage("Failed to follow: " + message);
+        }
+
+        @Override
+        public void handleException(Exception exception) {
+            Log.e(LOG_TAG, exception.getMessage());
+            view.displayErrorMessage("Failed to follow because of exception: " + exception.getMessage());
         }
     }
 }

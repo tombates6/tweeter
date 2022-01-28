@@ -112,17 +112,17 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
             followButton.setVisibility(View.GONE);
         } else {
             followButton.setVisibility(View.VISIBLE);
-            mainPresenter.getIsFollower();
+            mainPresenter.getIsFollower(selectedUser);
         }
 
         followButton.setOnClickListener(v -> {
             followButton.setEnabled(false);
 
             if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {
-                mainPresenter.unfollow();
+                mainPresenter.unfollow(selectedUser);
                 Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
             } else {
-                mainPresenter.follow();
+                mainPresenter.follow(selectedUser);
                 Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
             }
         });
@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         if (item.getItemId() == R.id.logoutMenu) {
             logOutToast = Toast.makeText(this, "Logging Out...", Toast.LENGTH_LONG);
             logOutToast.show();
-            mainPresenter.logout();
+            mainPresenter.logout(selectedUser);
 
             return true;
         } else {
@@ -161,7 +161,11 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     public void onStatusPosted(String post) {
         postingToast = Toast.makeText(this, "Posting Status...", Toast.LENGTH_LONG);
         postingToast.show();
-        mainPresenter.postStatus();
+        try {
+            mainPresenter.postStatus(post);
+        } catch (Exception ex) {
+            Toast.makeText(this, "Failed to post the status because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     public void updateFollowButton(boolean removed) {

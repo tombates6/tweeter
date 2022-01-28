@@ -124,11 +124,9 @@ public class StatusService {
             } else if (msg.getData().containsKey(PostStatusTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(PostStatusTask.MESSAGE_KEY);
                 observer.handleFailure(message);
-//                Toast.makeText(MainActivity.this, "Failed to post status: " + message, Toast.LENGTH_LONG).show();
             } else if (msg.getData().containsKey(PostStatusTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(PostStatusTask.EXCEPTION_KEY);
                 observer.handleException(ex);
-//                Toast.makeText(MainActivity.this, "Failed to post status because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     }
