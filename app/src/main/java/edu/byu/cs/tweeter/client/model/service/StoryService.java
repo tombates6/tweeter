@@ -10,31 +10,31 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.client.model.backgroundTask.GetFollowersTask;
+import edu.byu.cs.tweeter.client.model.backgroundTask.GetStoryTask;
 import edu.byu.cs.tweeter.client.presenter.BaseObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowersService {
-    public void getFollowers(AuthToken currUserAuthToken, User user, int pageSize, User lastFollower, GetFollowersObserver getFollowersObserver) {
-
-        GetFollowersTask getFollowersTask = new GetFollowersTask(currUserAuthToken,
-                user, pageSize, lastFollower, new GetFollowersHandler(getFollowersObserver));
+public class StoryService {
+    public void getStory(AuthToken currUserAuthToken, User user, int pageSize, Status lastStatus, GetStoryObserver
+            getStoryObserver) {
+        GetStoryTask getStoryTask = new GetStoryTask(currUserAuthToken, user, pageSize, lastStatus, new GetStoryHandler(getStoryObserver));
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(getFollowersTask);
+        executor.execute(getStoryTask);
     }
 
-    public interface GetFollowersObserver extends BaseObserver {
-        void handleSuccess(List<User> followers, boolean hasMorePages);
+    public interface GetStoryObserver extends BaseObserver {
+        void handleSuccess(List<Status> statuses, boolean hasMorePages);
     }
 
     /**
-     * Message handler (i.e., observer) for GetFollowersTask.
+     * Message handler (i.e., observer) for GetStoryTask.
      */
-    private class GetFollowersHandler extends Handler {
+    private class GetStoryHandler extends Handler {
 
-        private final FollowersService.GetFollowersObserver observer;
-
-        public GetFollowersHandler(FollowersService.GetFollowersObserver observer) {
+        private GetStoryObserver observer;
+        public GetStoryHandler(GetStoryObserver observer) {
             this.observer = observer;
         }
 
@@ -42,9 +42,9 @@ public class FollowersService {
         public void handleMessage(@NonNull Message msg) {
             boolean success = msg.getData().getBoolean(GetFollowersTask.SUCCESS_KEY);
             if (success) {
-                List<User> followers = (List<User>) msg.getData().getSerializable(GetFollowersTask.FOLLOWERS_KEY);
+                List<Status> statuses = (List<Status>) msg.getData().getSerializable(GetStoryTask.STATUSES_KEY);
                 boolean hasMorePages = msg.getData().getBoolean(GetFollowersTask.MORE_PAGES_KEY);
-                observer.handleSuccess(followers, hasMorePages);
+                observer.handleSuccess(statuses, hasMorePages);
             } else if (msg.getData().containsKey(GetFollowersTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(GetFollowersTask.MESSAGE_KEY);
                 observer.handleFailure(message);
