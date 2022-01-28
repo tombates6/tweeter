@@ -13,10 +13,10 @@ public class FollowersPresenter {
     private boolean hasMorePages;
     private boolean isLoading = false;
     private final FollowersPresenter.View view;
-    private final FollowService FollowersService;
+    private final FollowService followersService;
 
     public FollowersPresenter(FollowersPresenter.View view) {
-        this.FollowersService = new FollowService();
+        this.followersService = new FollowService();
         this.view = view;
     }
 
@@ -36,8 +36,12 @@ public class FollowersPresenter {
         if (!isLoading()) {   // This guard is important for avoiding a race condition in the scrolling code.
             isLoading = true;
             view.setLoadingFooter(true);
-            FollowersService.getFollowers(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastFollower, new FollowersPresenter.GetFollowersObserver());
+            followersService.getFollowers(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastFollower, new FollowersPresenter.GetFollowersObserver());
         }
+    }
+
+    public void getIsFollower() {
+        followersService.isFollower();
     }
 
     public interface View extends BaseView {
