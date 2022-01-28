@@ -119,8 +119,6 @@ public class StatusService {
             boolean success = msg.getData().getBoolean(PostStatusTask.SUCCESS_KEY);
             if (success) {
                 observer.handleSuccess();
-//                postingToast.cancel();
-//                Toast.makeText(MainActivity.this, "Successfully Posted!", Toast.LENGTH_LONG).show();
             } else if (msg.getData().containsKey(PostStatusTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(PostStatusTask.MESSAGE_KEY);
                 observer.handleFailure(message);

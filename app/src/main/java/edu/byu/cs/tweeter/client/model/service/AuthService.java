@@ -120,8 +120,6 @@ public class AuthService {
             boolean success = msg.getData().getBoolean(LogoutTask.SUCCESS_KEY);
             if (success) {
                 observer.handleSuccess();
-//                logOutToast.cancel();
-//                logoutUser();
                 Cache.getInstance().clearCache();
             } else if (msg.getData().containsKey(LogoutTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(LogoutTask.MESSAGE_KEY);

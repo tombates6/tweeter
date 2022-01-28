@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         if (item.getItemId() == R.id.logoutMenu) {
             logOutToast = Toast.makeText(this, "Logging Out...", Toast.LENGTH_LONG);
             logOutToast.show();
-            mainPresenter.logout(selectedUser);
+            mainPresenter.logout();
 
             return true;
         } else {
@@ -168,9 +168,9 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         }
     }
 
-    public void updateFollowButton(boolean removed) {
+    public void updateFollowButton(boolean following) {
         // If follow relationship was removed.
-        if (removed) {
+        if (!following) {
             followButton.setText(R.string.follow);
             followButton.setBackgroundColor(getResources().getColor(R.color.colorAccent));
         } else {
@@ -178,5 +178,51 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
             followButton.setBackgroundColor(getResources().getColor(R.color.white));
             followButton.setTextColor(getResources().getColor(R.color.lightGray));
         }
+    }
+
+    @Override
+    public void displayErrorMessage(String message) {
+        Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void logout() {
+        logOutToast.cancel();
+        logoutUser();
+    }
+
+    @Override
+    public void setFollowing(boolean following) {
+        updateFollowButton(following);
+        followButton.setEnabled(true);
+    }
+
+    @Override
+    public void post() {
+        postingToast.cancel();
+        Toast.makeText(MainActivity.this, "Successfully Posted!", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void isFollower(boolean isFollower) {
+        // If logged in user if a follower of the selected user, display the follow button as "following"
+        if (isFollower) {
+            followButton.setText(R.string.following);
+            followButton.setBackgroundColor(getResources().getColor(R.color.white));
+            followButton.setTextColor(getResources().getColor(R.color.lightGray));
+        } else {
+            followButton.setText(R.string.follow);
+            followButton.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+        }
+    }
+
+    @Override
+    public void setFollowingCount(int count) {
+        followeeCount.setText(getString(R.string.followeeCount, String.valueOf(count)));
+    }
+
+    @Override
+    public void setFollowersCount(int count) {
+        followerCount.setText(getString(R.string.followerCount, String.valueOf(count)));
     }
 }

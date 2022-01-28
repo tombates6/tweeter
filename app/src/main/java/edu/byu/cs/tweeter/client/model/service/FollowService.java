@@ -156,15 +156,12 @@ public class FollowService {
             if (success) {
                 int count = msg.getData().getInt(GetFollowersCountTask.COUNT_KEY);
                 observer.handleSuccess(count);
-//                followerCount.setText(getString(R.string.followerCount, String.valueOf(count)));
             } else if (msg.getData().containsKey(GetFollowersCountTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(GetFollowersCountTask.MESSAGE_KEY);
                 observer.handleFailure(message);
-//                Toast.makeText(MainActivity.this, "Failed to get followers count: " + message, Toast.LENGTH_LONG).show();
             } else if (msg.getData().containsKey(GetFollowersCountTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(GetFollowersCountTask.EXCEPTION_KEY);
                 observer.handleException(ex);
-//                Toast.makeText(MainActivity.this, "Failed to get followers count because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -184,7 +181,6 @@ public class FollowService {
             if (success) {
                 int count = msg.getData().getInt(GetFollowingCountTask.COUNT_KEY);
                 observer.handleSuccess(count);
-//                followeeCount.setText(getString(R.string.followeeCount, String.valueOf(count)));
             } else if (msg.getData().containsKey(GetFollowingCountTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(GetFollowingCountTask.MESSAGE_KEY);
                 observer.handleFailure(message);
@@ -214,16 +210,6 @@ public class FollowService {
             if (success) {
                 boolean isFollower = msg.getData().getBoolean(IsFollowerTask.IS_FOLLOWER_KEY);
                 observer.handleSuccess(isFollower);
-
-                // If logged in user if a follower of the selected user, display the follow button as "following"
-//                if (isFollower) {
-//                    followButton.setText(R.string.following);
-//                    followButton.setBackgroundColor(getResources().getColor(R.color.white));
-//                    followButton.setTextColor(getResources().getColor(R.color.lightGray));
-//                } else {
-//                    followButton.setText(R.string.follow);
-//                    followButton.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-//                }
             } else if (msg.getData().containsKey(IsFollowerTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(IsFollowerTask.MESSAGE_KEY);
                 observer.handleFailure(message);
@@ -251,8 +237,6 @@ public class FollowService {
             boolean success = msg.getData().getBoolean(FollowTask.SUCCESS_KEY);
             if (success) {
                 observer.handleSuccess();
-//                updateSelectedUserFollowingAndFollowers();
-//                updateFollowButton(false);
             } else if (msg.getData().containsKey(FollowTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(FollowTask.MESSAGE_KEY);
                 observer.handleFailure(message);
@@ -260,8 +244,6 @@ public class FollowService {
                 Exception ex = (Exception) msg.getData().getSerializable(FollowTask.EXCEPTION_KEY);
                 observer.handleException(ex);
             }
-
-//            followButton.setEnabled(true);
         }
     }
 

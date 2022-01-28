@@ -37,9 +37,9 @@ public class MainPresenter {
         void logout();
         void setFollowing(boolean following);
         void post();
-        void isFollower();
-        void setFollowingCount();
-        void setFollowersCount();
+        void isFollower(boolean isFollower);
+        void setFollowingCount(int count);
+        void setFollowersCount(int count);
     }
 
 
@@ -177,7 +177,7 @@ public class MainPresenter {
 
         @Override
         public void handleSuccess(int count) {
-            view.setFollowingCount();
+            view.setFollowingCount(count);
         }
 
         @Override
@@ -197,7 +197,7 @@ public class MainPresenter {
 
         @Override
         public void handleSuccess(int count) {
-            view.setFollowersCount();
+            view.setFollowersCount(count);
         }
 
         @Override
@@ -217,7 +217,7 @@ public class MainPresenter {
 
         @Override
         public void handleSuccess(boolean isFollower) {
-            view.isFollower();
+            view.isFollower(isFollower);
         }
 
         @Override
@@ -237,6 +237,7 @@ public class MainPresenter {
 
         @Override
         public void handleSuccess() {
+            updateSelectedUserFollowingAndFollowers();
             view.setFollowing(false);
         }
 
@@ -257,6 +258,7 @@ public class MainPresenter {
 
         @Override
         public void handleSuccess() {
+            updateSelectedUserFollowingAndFollowers();
             view.setFollowing(true);
         }
 
