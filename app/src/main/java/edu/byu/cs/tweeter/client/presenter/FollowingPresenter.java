@@ -3,7 +3,7 @@ package edu.byu.cs.tweeter.client.presenter;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
-import edu.byu.cs.tweeter.client.model.service.FollowingService;
+import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowingPresenter {
@@ -13,10 +13,10 @@ public class FollowingPresenter {
     private boolean hasMorePages;
     private boolean isLoading = false;
     private final View view;
-    private final FollowingService followingService;
+    private final FollowService followingService;
 
     public FollowingPresenter(View view) {
-        this.followingService = new FollowingService();
+        this.followingService = new FollowService();
         this.view = view;
     }
 
@@ -50,7 +50,7 @@ public class FollowingPresenter {
         void addFollowees(List<User> followees);
     }
 
-    public class GetFollowingObserver implements FollowingService.GetFollowingObserver {
+    public class GetFollowingObserver implements FollowService.GetFollowObserver {
 
         @Override
         public void handleSuccess(List<User> followees, boolean hasMorePages) {
