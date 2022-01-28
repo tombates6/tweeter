@@ -7,8 +7,16 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.byu.cs.tweeter.client.model.service.AuthService;
+import edu.byu.cs.tweeter.client.model.service.FollowService;
+import edu.byu.cs.tweeter.client.model.service.StatusService;
+
 public class MainPresenter {
+    private static final String LOG_TAG = "MainActivity";
     private View view;
+    private FollowService followService;
+    private StatusService statusService;
+    private AuthService authService;
 
     public MainPresenter(View view) {
         this.view = view;
@@ -16,7 +24,28 @@ public class MainPresenter {
 
 
     public interface View extends BaseView {
+        void logout();
+    }
 
+
+    public void getIsFollower() {
+        followService.isFollower();
+    }
+
+    public void follow() {
+        followService.follow();
+    }
+
+    public void unfollow() {
+        followService.unfollow();
+    }
+
+    public void postStatus() {
+        statusService.postStatus();
+    }
+
+    public void logout() {
+        authService.logout();
     }
 
     public int findUrlEndIndex(String word) {
@@ -44,6 +73,7 @@ public class MainPresenter {
             return word.length();
         }
     }
+
     public List<String> parseMentions(String post) {
         List<String> containedMentions = new ArrayList<>();
 
@@ -94,5 +124,95 @@ public class MainPresenter {
         SimpleDateFormat statusFormat = new SimpleDateFormat("MMM d yyyy h:mm aaa");
 
         return statusFormat.format(userFormat.parse(LocalDate.now().toString() + " " + LocalTime.now().toString().substring(0, 8)));
+    }
+
+    public class LogoutObserver implements AuthService.LogoutObserver {
+
+        @Override
+        public void handleSuccess() {
+
+        }
+
+        @Override
+        public void handleFailure(String message) {
+
+        }
+
+        @Override
+        public void handleException(Exception exception) {
+
+        }
+    }
+
+    public class PostStatusObserver implements StatusService.PostStatusObserver {
+
+        @Override
+        public void handleSuccess() {
+
+        }
+
+        @Override
+        public void handleFailure(String message) {
+
+        }
+
+        @Override
+        public void handleException(Exception exception) {
+
+        }
+    }
+
+    public class GetCountObserver implements FollowService.GetCountObserver {
+
+        @Override
+        public void handleSuccess(int count) {
+
+        }
+
+        @Override
+        public void handleFailure(String message) {
+
+        }
+
+        @Override
+        public void handleException(Exception exception) {
+
+        }
+    }
+
+    public class IsFollowingObserver implements FollowService.IsFollowingObserver {
+
+        @Override
+        public void handleSuccess(boolean isFollower) {
+
+        }
+
+        @Override
+        public void handleFailure(String message) {
+
+        }
+
+        @Override
+        public void handleException(Exception exception) {
+
+        }
+    }
+
+    public class FollowUnfollowObserver implements FollowService.FollowUnfollowObserver {
+
+        @Override
+        public void handleSuccess() {
+
+        }
+
+        @Override
+        public void handleFailure(String message) {
+
+        }
+
+        @Override
+        public void handleException(Exception exception) {
+
+        }
     }
 }

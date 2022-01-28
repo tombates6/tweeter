@@ -40,10 +40,6 @@ public class FollowersPresenter {
         }
     }
 
-    public void getIsFollower() {
-        followersService.isFollower();
-    }
-
     public interface View extends BaseView {
         void setLoadingFooter(boolean loading);
 

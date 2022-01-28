@@ -52,10 +52,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * The main activity for the application. Contains tabs for feed, story, following, and followers.
  */
-public class MainActivity extends AppCompatActivity implements StatusDialogFragment.Observer {
-
-    private static final String LOG_TAG = "MainActivity";
-
+public class MainActivity extends AppCompatActivity implements StatusDialogFragment.Observer, MainPresenter.View {
     public static final String CURRENT_USER_KEY = "CurrentUser";
 
     private Toast logOutToast;
@@ -64,10 +61,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     private TextView followeeCount;
     private TextView followerCount;
     private Button followButton;
-    private FollowersPresenter followersPresenter;
-    private FollowingPresenter followingPresenter;
     private MainPresenter mainPresenter;
-    private UserPresenter userPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,14 +82,11 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
         FloatingActionButton fab = findViewById(R.id.fab);
 
-        // TODO initialize presenters
+        mainPresenter = new MainPresenter(this);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                StatusDialogFragment statusDialogFragment = new StatusDialogFragment();
-                statusDialogFragment.show(getSupportFragmentManager(), "post-status-dialog");
-            }
+        fab.setOnClickListener(view -> {
+            StatusDialogFragment statusDialogFragment = new StatusDialogFragment();
+            statusDialogFragment.show(getSupportFragmentManager(), "post-status-dialog");
         });
 
         mainPresenter.updateSelectedUserFollowingAndFollowers();
@@ -121,35 +112,18 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
             followButton.setVisibility(View.GONE);
         } else {
             followButton.setVisibility(View.VISIBLE);
-            followersPresenter.getIsFollower();
-//            IsFollowerTask isFollowerTask = new IsFollowerTask(Cache.getInstance().getCurrUserAuthToken(),
-//                    Cache.getInstance().getCurrUser(), selectedUser, new IsFollowerHandler());
-//            ExecutorService executor = Executors.newSingleThreadExecutor();
-//            executor.execute(isFollowerTask);
+            mainPresenter.getIsFollower();
         }
 
-        followButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                followButton.setEnabled(false);
+        followButton.setOnClickListener(v -> {
+            followButton.setEnabled(false);
 
-                if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {
-//                    FollowingService
-//                    UnfollowTask unfollowTask = new UnfollowTask(Cache.getInstance().getCurrUserAuthToken(),
-//                            selectedUser, new UnfollowHandler());
-//                    ExecutorService executor = Executors.newSingleThreadExecutor();
-//                    executor.execute(unfollowTask);
-
-                    Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
-                } else {
-//                    FollowingService
-//                    FollowTask followTask = new FollowTask(Cache.getInstance().getCurrUserAuthToken(),
-//                            selectedUser, new FollowHandler());
-//                    ExecutorService executor = Executors.newSingleThreadExecutor();
-//                    executor.execute(followTask);
-
-                    Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
-                }
+            if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {
+                mainPresenter.unfollow();
+                Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
+            } else {
+                mainPresenter.follow();
+                Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -166,10 +140,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         if (item.getItemId() == R.id.logoutMenu) {
             logOutToast = Toast.makeText(this, "Logging Out...", Toast.LENGTH_LONG);
             logOutToast.show();
-
-//            LogoutTask logoutTask = new LogoutTask(Cache.getInstance().getCurrUserAuthToken(), new LogoutHandler());
-//            ExecutorService executor = Executors.newSingleThreadExecutor();
-//            executor.execute(logoutTask);
+            mainPresenter.logout();
 
             return true;
         } else {
@@ -177,14 +148,12 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         }
     }
 
-//        LoginService
     public void logoutUser() {
         //Revert to login screen.
         Intent intent = new Intent(this, LoginActivity.class);
         //Clear everything so that the main activity is recreated with the login page.
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //Clear user data (cached data).
-        Cache.getInstance().clearCache();
         startActivity(intent);
     }
 
@@ -192,18 +161,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     public void onStatusPosted(String post) {
         postingToast = Toast.makeText(this, "Posting Status...", Toast.LENGTH_LONG);
         postingToast.show();
-
-//            StatusService
-//        try {
-//            Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
-//            PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
-//                    newStatus, new PostStatusHandler());
-//            ExecutorService executor = Executors.newSingleThreadExecutor();
-//            executor.execute(statusTask);
-//        } catch (Exception ex) {
-//            Log.e(LOG_TAG, ex.getMessage(), ex);
-//            Toast.makeText(this, "Failed to post the status because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-//        }
+        mainPresenter.postStatus();
     }
 
     public void updateFollowButton(boolean removed) {

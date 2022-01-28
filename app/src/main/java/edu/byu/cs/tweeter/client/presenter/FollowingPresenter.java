@@ -32,10 +32,6 @@ public class FollowingPresenter {
         return isLoading;
     }
 
-    public void setLoading(boolean loading) {
-        isLoading = loading;
-    }
-
     public void loadMoreItems(User user) {
         if (!isLoading()) {   // This guard is important for avoiding a race condition in the scrolling code.
             isLoading = true;
