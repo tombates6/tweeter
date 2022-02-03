@@ -1,5 +1,7 @@
 package edu.byu.cs.tweeter.client.model.service;
 
+import static edu.byu.cs.tweeter.client.model.service.backgroundTask.BackgroundTaskUtils.runTask;
+
 import android.os.Handler;
 import android.os.Message;
 
@@ -20,23 +22,20 @@ public class AuthService {
     public void login(String alias, String password, AuthObserver loginObserver) {
         // Send the login request.
         LoginTask loginTask = new LoginTask(alias, password, new LoginHandler(loginObserver));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(loginTask);
+        runTask(loginTask);
+        runTask(loginTask);
     }
 
     public void logout(AuthToken token, LogoutObserver observer) {
         LogoutTask logoutTask = new LogoutTask(token, new LogoutHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(logoutTask);
+        runTask(logoutTask);
     }
 
     public void register(String firstName, String lastName, String alias, String password, String imageBytesBase64, AuthObserver registerObserver) {
         // Send register request.
         RegisterTask registerTask = new RegisterTask(firstName, lastName,
                 alias, password, imageBytesBase64, new RegisterHandler(registerObserver));
-
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(registerTask);
+        runTask(registerTask);
     }
 
     public interface AuthObserver extends BaseObserver {

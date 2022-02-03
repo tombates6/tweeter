@@ -1,5 +1,7 @@
 package edu.byu.cs.tweeter.client.model.service;
 
+import static edu.byu.cs.tweeter.client.model.service.backgroundTask.BackgroundTaskUtils.runTask;
+
 import android.os.Handler;
 import android.os.Message;
 
@@ -18,8 +20,7 @@ public class UserService {
     public void getUserProfile(String userAlias, GetUserObserver observer) {
         GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
                 userAlias, new GetUserHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(getUserTask);
+        runTask(getUserTask);
     }
 
 

@@ -1,5 +1,7 @@
 package edu.byu.cs.tweeter.client.model.service;
 
+import static edu.byu.cs.tweeter.client.model.service.backgroundTask.BackgroundTaskUtils.runTask;
+
 import android.os.Handler;
 import android.os.Message;
 
@@ -21,22 +23,19 @@ public class StatusService {
     public void getStory(AuthToken currUserAuthToken, User user, int pageSize, Status lastStatus, GetStatusObserver
             getStoryObserver) {
         GetStoryTask getStoryTask = new GetStoryTask(currUserAuthToken, user, pageSize, lastStatus, new GetStoryHandler(getStoryObserver));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(getStoryTask);
+        runTask(getStoryTask);
     }
 
     public void getFeed(AuthToken currUserAuthToken, User user, int pageSize, Status lastStatus, GetStatusObserver getFeedObserver) {
         GetFeedTask getFeedTask = new GetFeedTask(currUserAuthToken,
                 user, pageSize, lastStatus, new GetFeedHandler(getFeedObserver));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(getFeedTask);
+        runTask(getFeedTask);
     }
 
     public void postStatus(AuthToken token, Status newStatus, PostStatusObserver observer) {
         PostStatusTask statusTask = new PostStatusTask(token,
                 newStatus, new PostStatusHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(statusTask);
+        runTask(statusTask);
     }
 
     public interface GetStatusObserver extends BaseObserver {
