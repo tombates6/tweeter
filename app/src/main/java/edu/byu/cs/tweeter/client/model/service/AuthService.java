@@ -15,7 +15,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class AuthService {
     public void login(String alias, String password, AuthObserver loginObserver) {
-        LoginTask loginTask = new LoginTask(alias, password, new LoginHandler(loginObserver));
+        LoginTask loginTask = new LoginTask(alias, password, new AuthHandler(loginObserver));
         runTask(loginTask);
     }
 
@@ -26,7 +26,7 @@ public class AuthService {
 
     public void register(String firstName, String lastName, String alias, String password, String imageBytesBase64, AuthObserver registerObserver) {
         RegisterTask registerTask = new RegisterTask(firstName, lastName,
-                alias, password, imageBytesBase64, new RegisterHandler(registerObserver));
+                alias, password, imageBytesBase64, new AuthHandler(registerObserver));
         runTask(registerTask);
     }
 
@@ -37,8 +37,8 @@ public class AuthService {
     /**
      * Message handler (i.e., observer) for LoginTask
      */
-    private class LoginHandler extends BackgroundTaskHandler<AuthObserver> {
-        public LoginHandler(AuthObserver observer) {
+    private class AuthHandler extends BackgroundTaskHandler<AuthObserver> {
+        public AuthHandler(AuthObserver observer) {
             super(observer);
         }
 
@@ -49,22 +49,6 @@ public class AuthService {
             Cache.getInstance().setCurrUser(loggedInUser);
             Cache.getInstance().setCurrUserAuthToken(authToken);
             observer.handleSuccess(loggedInUser, authToken);
-        }
-    }
-
-    // RegisterHandler
-    private class RegisterHandler extends BackgroundTaskHandler<AuthObserver> {
-        public RegisterHandler(AuthObserver observer) {
-            super(observer);
-        }
-
-        @Override
-        protected void handleSuccessMessage(AuthObserver observer, Bundle data) {
-            User registeredUser = (User) data.getSerializable(RegisterTask.USER_KEY);
-            AuthToken authToken = (AuthToken) data.getSerializable(RegisterTask.AUTH_TOKEN_KEY);
-            Cache.getInstance().setCurrUser(registeredUser);
-            Cache.getInstance().setCurrUserAuthToken(authToken);
-            observer.handleSuccess(registeredUser, authToken);
         }
     }
 
