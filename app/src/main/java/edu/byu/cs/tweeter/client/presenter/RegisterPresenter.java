@@ -2,25 +2,18 @@ package edu.byu.cs.tweeter.client.presenter;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Base64;
 
 import edu.byu.cs.tweeter.client.model.service.AuthService;
 import edu.byu.cs.tweeter.client.presenter.view.AuthView;
-import edu.byu.cs.tweeter.client.presenter.view.BaseView;
-import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.User;
 
-public class RegisterPresenter {
-    private static final String LOG_TAG = "RegisterFragment";
-
-    private final AuthView view;
+public class RegisterPresenter extends AuthPresenter {
     private final AuthService registerService;
 
     public RegisterPresenter(AuthView view) {
-        this.view = view;
+        super(view, "RegisterPresenter", "register");
         this.registerService = new AuthService();
     }
 
@@ -35,7 +28,7 @@ public class RegisterPresenter {
         // Intentionally, Use the java Base64 encoder so it is compatible with M4.
         String imageBytesBase64 = Base64.getEncoder().encodeToString(imageBytes);
 
-        registerService.register(firstName, lastName, alias, password, imageBytesBase64, new RegisterObserver());
+        registerService.register(firstName, lastName, alias, password, imageBytesBase64, new PresenterAuthObserver());
     }
 
     public void validateRegistration(String firstName, String lastName, String alias, String password, BitmapDrawable imageToUpload
@@ -61,26 +54,6 @@ public class RegisterPresenter {
 
         if (imageToUpload == null) {
             throw new IllegalArgumentException("Profile image must be uploaded.");
-        }
-    }
-
-    public class RegisterObserver implements AuthService.AuthObserver {
-
-        @Override
-        public void handleSuccess(User loggedInUser, AuthToken authToken) {
-            view.login(loggedInUser);
-        }
-
-        @Override
-        public void handleFailure(String message) {
-            Log.e(LOG_TAG, message);
-            view.displayErrorMessage("Failed to register: " + message);
-        }
-
-        @Override
-        public void handleException(Exception exception) {
-            Log.e(LOG_TAG, exception.getMessage());
-            view.displayErrorMessage("Failed to register because of exception: " + exception.getMessage());
         }
     }
 }

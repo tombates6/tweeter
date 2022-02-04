@@ -9,6 +9,7 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.LoginTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.LogoutTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.RegisterTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.BackgroundTaskHandler;
+import edu.byu.cs.tweeter.client.model.service.observer.AuthObserver;
 import edu.byu.cs.tweeter.client.model.service.observer.BaseObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -28,10 +29,6 @@ public class AuthService {
         RegisterTask registerTask = new RegisterTask(firstName, lastName,
                 alias, password, imageBytesBase64, new AuthHandler(registerObserver));
         runTask(registerTask);
-    }
-
-    public interface AuthObserver extends BaseObserver {
-        void handleSuccess(User loggedInUser, AuthToken authToken);
     }
 
     /**
