@@ -1,77 +1,21 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import android.util.Log;
-
-import java.util.List;
-
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
-import edu.byu.cs.tweeter.client.model.service.observer.PagedTaskObserver;
 import edu.byu.cs.tweeter.client.presenter.view.PageView;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class StoryPresenter {
-    private static final String LOG_TAG = "StoryFragment";
-    private static final int PAGE_SIZE = 10;
-    private final PageView<Status> view;
+public class StoryPresenter extends PagedPresenter<Status>{
     private final StatusService storyService;
-    private Status lastStatus;
-
-    private boolean hasMorePages;
-    private boolean isLoading = false;
 
     public StoryPresenter(PageView<Status> view) {
-        this.view = view;
+        super(view, "StoryPresenter", "story");
         this.storyService = new StatusService();
     }
 
-    public boolean hasMorePages() {
-        return hasMorePages;
-    }
-
-    public void setHasMorePages(boolean hasMorePages) {
-        this.hasMorePages = hasMorePages;
-    }
-
-    public boolean isLoading() {
-        return isLoading;
-    }
-
-    public void loadMoreItems(User user) {
-        if (!isLoading()) {   // This guard is important for avoiding a race condition in the scrolling code.
-            isLoading = true;
-            view.setLoadingFooter(true);
-            storyService.getStory(Cache.getInstance().getCurrUserAuthToken(),
-                    user, PAGE_SIZE, lastStatus, new GetStoryObserver());
-        }
-    }
-
-    public class GetStoryObserver implements PagedTaskObserver<Status> {
-
-        @Override
-        public void handleSuccess(List<Status> statuses, boolean hasMorePages) {
-            isLoading = false;
-            view.setLoadingFooter(false);
-            lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
-            setHasMorePages(hasMorePages);
-            view.addItems(statuses);
-        }
-
-        @Override
-        public void handleFailure(String message) {
-            Log.e(LOG_TAG, message);
-            isLoading = false;
-            view.setLoadingFooter(false);
-            view.displayErrorMessage("Failed to get story: " + message);
-        }
-
-        @Override
-        public void handleException(Exception exception) {
-            Log.e(LOG_TAG, exception.getMessage());
-            isLoading = false;
-            view.setLoadingFooter(false);
-            view.displayErrorMessage("Failed to get story because of exception: " + exception.getMessage());
-        }
+    @Override
+    public void getItemsFromService(User user) {
+        storyService.getStory(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastItem, new GetItemsObserver());
     }
 }
