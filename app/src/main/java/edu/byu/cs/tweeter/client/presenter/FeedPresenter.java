@@ -18,10 +18,10 @@ public class FeedPresenter {
     private Status lastStatus;
     private boolean hasMorePages;
     private boolean isLoading = false;
-    private final FeedPresenter.View view;
+    private final PageView<Status> view;
     private final StatusService feedService;
 
-    public FeedPresenter(FeedPresenter.View view) {
+    public FeedPresenter(PageView<Status> view) {
         this.feedService = new StatusService();
         this.view = view;
     }
@@ -45,12 +45,6 @@ public class FeedPresenter {
         }
     }
 
-    public interface View extends BaseView {
-        void setLoadingFooter(boolean loading);
-
-        void addStatuses(List<Status> statuses);
-    }
-
     public class GetFeedObserver implements PagedTaskObserver<Status> {
 
         @Override
@@ -59,7 +53,7 @@ public class FeedPresenter {
             view.setLoadingFooter(false);
             lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
             setHasMorePages(hasMorePages);
-            view.addStatuses(statuses);
+            view.addItems(statuses);
         }
 
         @Override

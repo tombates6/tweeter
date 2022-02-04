@@ -13,10 +13,10 @@ public class FollowersPresenter {
     private User lastFollower;
     private boolean hasMorePages;
     private boolean isLoading = false;
-    private final FollowersPresenter.View view;
+    private final PageView<User> view;
     private final FollowService followersService;
 
-    public FollowersPresenter(FollowersPresenter.View view) {
+    public FollowersPresenter(PageView<User> view) {
         this.followersService = new FollowService();
         this.view = view;
     }
@@ -41,12 +41,6 @@ public class FollowersPresenter {
         }
     }
 
-    public interface View extends BaseView {
-        void setLoadingFooter(boolean loading);
-
-        void addFollowers(List<User> followees);
-    }
-
     public class GetFollowersObserver implements PagedTaskObserver<User> {
 
         @Override
@@ -55,7 +49,7 @@ public class FollowersPresenter {
             view.setLoadingFooter(false);
             lastFollower = (followers.size() > 0) ? followers.get(followers.size() - 1) : null;
             setHasMorePages(hasMorePages);
-            view.addFollowers(followers);
+            view.addItems(followers);
         }
 
         @Override

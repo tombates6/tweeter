@@ -13,10 +13,10 @@ public class FollowingPresenter {
     private User lastFollowee;
     private boolean hasMorePages;
     private boolean isLoading = false;
-    private final View view;
+    private final PageView<User> view;
     private final FollowService followingService;
 
-    public FollowingPresenter(View view) {
+    public FollowingPresenter(PageView<User> view) {
         this.followingService = new FollowService();
         this.view = view;
     }
@@ -41,12 +41,6 @@ public class FollowingPresenter {
         }
     }
 
-    public interface View extends BaseView {
-        void setLoadingFooter(boolean loading);
-
-        void addFollowees(List<User> followees);
-    }
-
     public class GetFollowingObserver implements PagedTaskObserver<User> {
 
         @Override
@@ -55,7 +49,7 @@ public class FollowingPresenter {
             view.setLoadingFooter(false);
             lastFollowee = (followees.size() > 0) ? followees.get(followees.size() - 1) : null;
             setHasMorePages(hasMorePages);
-            view.addFollowees(followees);
+            view.addItems(followees);
         }
 
         @Override

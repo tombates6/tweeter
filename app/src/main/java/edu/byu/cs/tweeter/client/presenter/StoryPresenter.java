@@ -13,14 +13,14 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class StoryPresenter {
     private static final String LOG_TAG = "StoryFragment";
     private static final int PAGE_SIZE = 10;
-    private final View view;
+    private final PageView<Status> view;
     private final StatusService storyService;
     private Status lastStatus;
 
     private boolean hasMorePages;
     private boolean isLoading = false;
 
-    public StoryPresenter(View view) {
+    public StoryPresenter(PageView<Status> view) {
         this.view = view;
         this.storyService = new StatusService();
     }
@@ -46,12 +46,6 @@ public class StoryPresenter {
         }
     }
 
-    public interface View extends BaseView {
-        void setLoadingFooter(boolean loading);
-
-        void addStatuses(List<Status> statuses);
-    }
-
     public class GetStoryObserver implements PagedTaskObserver<Status> {
 
         @Override
@@ -60,7 +54,7 @@ public class StoryPresenter {
             view.setLoadingFooter(false);
             lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
             setHasMorePages(hasMorePages);
-            view.addStatuses(statuses);
+            view.addItems(statuses);
         }
 
         @Override
