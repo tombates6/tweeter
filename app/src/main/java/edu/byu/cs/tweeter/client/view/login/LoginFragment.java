@@ -14,13 +14,14 @@ import androidx.fragment.app.Fragment;
 
 import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.client.presenter.LoginPresenter;
+import edu.byu.cs.tweeter.client.presenter.view.AuthView;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.User;
 
 /**
  * Implements the login screen.
  */
-public class LoginFragment extends Fragment implements LoginPresenter.View {
+public class LoginFragment extends Fragment implements AuthView {
 
     private Toast loginInToast;
     private TextView errorView;

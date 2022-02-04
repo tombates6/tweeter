@@ -2,15 +2,16 @@ package edu.byu.cs.tweeter.client.presenter;
 
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.client.presenter.view.BaseView;
+import edu.byu.cs.tweeter.client.presenter.view.UserView;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class UserPresenter {
 
     private User user;
     private final UserService userService;
-    private final View view;
+    private final UserView view;
 
-    public UserPresenter(View view) {
+    public UserPresenter(UserView view) {
         this.userService = new UserService();
         this.view = view;
     }
@@ -25,10 +26,6 @@ public class UserPresenter {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public interface View extends BaseView {
-        void switchUser(User user);
     }
 
     public class GetUserObserver implements UserService.GetUserObserver {

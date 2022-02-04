@@ -34,6 +34,7 @@ import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.client.presenter.view.PageView;
 import edu.byu.cs.tweeter.client.presenter.StoryPresenter;
 import edu.byu.cs.tweeter.client.presenter.UserPresenter;
+import edu.byu.cs.tweeter.client.presenter.view.UserView;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -41,7 +42,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Implements the "Story" tab.
  */
-public class StoryFragment extends Fragment implements UserPresenter.View, PageView<Status> {
+public class StoryFragment extends Fragment implements UserView, PageView<Status> {
     private static final String USER_KEY = "UserKey";
 
     private static final int LOADING_DATA_VIEW = 0;

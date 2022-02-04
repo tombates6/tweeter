@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.Base64;
 
 import edu.byu.cs.tweeter.client.model.service.AuthService;
+import edu.byu.cs.tweeter.client.presenter.view.AuthView;
 import edu.byu.cs.tweeter.client.presenter.view.BaseView;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -15,10 +16,10 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class RegisterPresenter {
     private static final String LOG_TAG = "RegisterFragment";
 
-    private final View view;
+    private final AuthView view;
     private final AuthService registerService;
 
-    public RegisterPresenter(View view) {
+    public RegisterPresenter(AuthView view) {
         this.view = view;
         this.registerService = new AuthService();
     }
@@ -35,10 +36,6 @@ public class RegisterPresenter {
         String imageBytesBase64 = Base64.getEncoder().encodeToString(imageBytes);
 
         registerService.register(firstName, lastName, alias, password, imageBytesBase64, new RegisterObserver());
-    }
-
-    public interface View extends BaseView {
-        void login(User registeredUser);
     }
 
     public void validateRegistration(String firstName, String lastName, String alias, String password, BitmapDrawable imageToUpload

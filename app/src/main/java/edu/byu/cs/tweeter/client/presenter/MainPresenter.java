@@ -14,34 +14,23 @@ import edu.byu.cs.tweeter.client.model.service.AuthService;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.client.presenter.view.BaseView;
+import edu.byu.cs.tweeter.client.presenter.view.MainView;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class MainPresenter {
     private static final String LOG_TAG = "MainActivity";
-    private View view;
+    private MainView view;
     private FollowService followService;
     private StatusService statusService;
     private AuthService authService;
 
-    public MainPresenter(View view) {
-
+    public MainPresenter(MainView view) {
         this.view = view;
         this.followService = new FollowService();
         this.statusService = new StatusService();
         this.authService = new AuthService();
     }
-
-
-    public interface View extends BaseView {
-        void logout();
-        void setFollowing(boolean following);
-        void post();
-        void isFollower(boolean isFollower);
-        void setFollowingCount(int count);
-        void setFollowersCount(int count);
-    }
-
 
     public void getIsFollower(User selectedUser) {
         followService.isFollower(Cache.getInstance().getCurrUserAuthToken(), selectedUser, new IsFollowingObserver());

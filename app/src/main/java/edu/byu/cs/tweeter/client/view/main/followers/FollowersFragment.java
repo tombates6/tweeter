@@ -28,13 +28,14 @@ import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.client.presenter.FollowersPresenter;
 import edu.byu.cs.tweeter.client.presenter.view.PageView;
 import edu.byu.cs.tweeter.client.presenter.UserPresenter;
+import edu.byu.cs.tweeter.client.presenter.view.UserView;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.User;
 
 /**
  * Implements the "Followers" tab.
  */
-public class FollowersFragment extends Fragment implements UserPresenter.View, PageView<User> {
+public class FollowersFragment extends Fragment implements UserView, PageView<User> {
     private static final String LOG_TAG = "FollowersFragment";
     private static final String USER_KEY = "UserKey";
     private static final int LOADING_DATA_VIEW = 0;

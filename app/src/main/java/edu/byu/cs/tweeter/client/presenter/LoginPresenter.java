@@ -3,22 +3,19 @@ package edu.byu.cs.tweeter.client.presenter;
 import android.util.Log;
 
 import edu.byu.cs.tweeter.client.model.service.AuthService;
+import edu.byu.cs.tweeter.client.presenter.view.AuthView;
 import edu.byu.cs.tweeter.client.presenter.view.BaseView;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class LoginPresenter {
     private static final String LOG_TAG = "LoginFragment";
-    private View view;
+    private AuthView view;
     private AuthService loginService;
 
-    public LoginPresenter(View view) {
+    public LoginPresenter(AuthView view) {
         this.view = view;
         this.loginService = new AuthService();
-    }
-
-    public interface View extends BaseView {
-        void login(User loggedInUser);
     }
 
     public void sendLogin(String alias, String password) {
