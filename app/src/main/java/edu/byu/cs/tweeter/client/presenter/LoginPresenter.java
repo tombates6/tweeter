@@ -3,6 +3,7 @@ package edu.byu.cs.tweeter.client.presenter;
 import android.util.Log;
 
 import edu.byu.cs.tweeter.client.model.service.AuthService;
+import edu.byu.cs.tweeter.client.presenter.view.BaseView;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
