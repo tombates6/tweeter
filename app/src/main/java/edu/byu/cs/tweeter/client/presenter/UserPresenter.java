@@ -5,15 +5,13 @@ import edu.byu.cs.tweeter.client.presenter.view.BaseView;
 import edu.byu.cs.tweeter.client.presenter.view.UserView;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class UserPresenter {
-
+public class UserPresenter extends Presenter<UserView> {
     private User user;
     private final UserService userService;
-    private final UserView view;
 
     public UserPresenter(UserView view) {
+        super(view, "UserPresenter");
         this.userService = new UserService();
-        this.view = view;
     }
 
     public void getUserProfile(String userAlias) {
@@ -36,12 +34,12 @@ public class UserPresenter {
 
         @Override
         public void handleFailure(String message) {
-            view.displayErrorMessage("Failed to get user's profile: " + message);
+            showFailure("get user's profile", message);
         }
 
         @Override
         public void handleException(Exception exception) {
-            view.displayErrorMessage("Failed to get user's profile because of exception: " + exception.getMessage());
+            showError("get user's profile", exception);
         }
     }
 }

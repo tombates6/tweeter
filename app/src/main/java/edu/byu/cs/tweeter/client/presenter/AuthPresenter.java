@@ -8,8 +8,10 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public abstract class AuthPresenter extends Presenter<AuthView>{
-    public AuthPresenter(AuthView view, String logTag, String subject) {
-        super(view, logTag, subject);
+    private String action;
+    public AuthPresenter(AuthView view, String logTag, String action) {
+        super(view, logTag);
+        this.action = action;
     }
 
     public class PresenterAuthObserver implements AuthObserver {
@@ -20,14 +22,12 @@ public abstract class AuthPresenter extends Presenter<AuthView>{
 
         @Override
         public void handleFailure(String message) {
-            Log.e(LOG_TAG, message);
-            view.displayErrorMessage("Failed to " + action + " : " + message);
+            showFailure(action, message);
         }
 
         @Override
         public void handleException(Exception exception) {
-            Log.e(LOG_TAG, exception.getMessage());
-            view.displayErrorMessage("Failed to " + action + " because of exception: " + exception.getMessage());
+            showError(action, exception);
 
         }
     }
