@@ -1,7 +1,7 @@
 package edu.byu.cs.tweeter.client.presenter;
 
 import edu.byu.cs.tweeter.client.model.service.UserService;
-import edu.byu.cs.tweeter.client.presenter.view.BaseView;
+import edu.byu.cs.tweeter.client.model.service.observer.IGetUserObserver;
 import edu.byu.cs.tweeter.client.presenter.view.UserView;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -26,7 +26,7 @@ public class UserPresenter extends Presenter<UserView> {
         this.user = user;
     }
 
-    public class GetUserObserver implements UserService.GetUserObserver {
+    public class GetUserObserver implements IGetUserObserver {
         @Override
         public void handleSuccess(User user) {
             view.switchUser(user);

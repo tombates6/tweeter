@@ -1,8 +1,6 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import android.util.Log;
-
-import edu.byu.cs.tweeter.client.model.service.observer.AuthObserver;
+import edu.byu.cs.tweeter.client.model.service.observer.IAuthObserver;
 import edu.byu.cs.tweeter.client.presenter.view.AuthView;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -14,7 +12,7 @@ public abstract class AuthPresenter extends Presenter<AuthView>{
         this.action = action;
     }
 
-    public class PresenterAuthObserver implements AuthObserver {
+    public class AuthObserver implements IAuthObserver {
         @Override
         public void handleSuccess(User loggedInUser, AuthToken authToken) {
             view.login(loggedInUser);

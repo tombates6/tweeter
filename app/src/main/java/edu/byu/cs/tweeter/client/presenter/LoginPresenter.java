@@ -1,7 +1,5 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import android.util.Log;
-
 import edu.byu.cs.tweeter.client.model.service.AuthService;
 import edu.byu.cs.tweeter.client.presenter.view.AuthView;
 
@@ -14,7 +12,7 @@ public class LoginPresenter extends AuthPresenter {
     }
 
     public void sendLogin(String alias, String password) {
-        loginService.login(alias, password, new PresenterAuthObserver());
+        loginService.login(alias, password, new AuthObserver());
     }
 
     public void validateLogin(String alias, String password) {

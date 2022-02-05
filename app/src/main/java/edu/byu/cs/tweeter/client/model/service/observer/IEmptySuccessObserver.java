@@ -1,5 +1,5 @@
 package edu.byu.cs.tweeter.client.model.service.observer;
 
-public interface EmptySuccessObserver extends BaseObserver {
+public interface IEmptySuccessObserver extends BaseObserver {
     void handleSuccess();
 }

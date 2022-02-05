@@ -2,7 +2,7 @@ package edu.byu.cs.tweeter.client.presenter;
 
 import java.util.List;
 
-import edu.byu.cs.tweeter.client.model.service.observer.PagedTaskObserver;
+import edu.byu.cs.tweeter.client.model.service.observer.IPagedTaskObserver;
 import edu.byu.cs.tweeter.client.presenter.view.PageView;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -40,7 +40,7 @@ public abstract class PagedPresenter<T> extends Presenter<PageView<T>> {
     
     public abstract void getItemsFromService(User user);
 
-    public class GetItemsObserver implements PagedTaskObserver<T> {
+    public class PagedTaskObserver implements IPagedTaskObserver<T> {
 
         @Override
         public void handleSuccess(List<T> items, boolean hasMorePages) {

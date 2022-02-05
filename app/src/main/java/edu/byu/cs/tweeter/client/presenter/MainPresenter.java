@@ -11,6 +11,9 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.AuthService;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
+import edu.byu.cs.tweeter.client.model.service.observer.IEmptySuccessObserver;
+import edu.byu.cs.tweeter.client.model.service.observer.IGetCountObserver;
+import edu.byu.cs.tweeter.client.model.service.observer.IIsFollowingObserver;
 import edu.byu.cs.tweeter.client.presenter.view.MainView;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -118,8 +121,8 @@ public class MainPresenter extends Presenter<MainView>{
     }
 
 
-    public abstract class EmptySuccessObserver implements edu.byu.cs.tweeter.client.model.service.observer.EmptySuccessObserver {
-        private String action;
+    public abstract class EmptySuccessObserver implements IEmptySuccessObserver {
+        private final String action;
         public EmptySuccessObserver(String action) { this.action = action; }
 
         @Override
@@ -140,8 +143,8 @@ public class MainPresenter extends Presenter<MainView>{
         public abstract void success();
     }
 
-    public abstract class GetCountObserver implements edu.byu.cs.tweeter.client.model.service.observer.GetCountObserver {
-        private String action;
+    public abstract class GetCountObserver implements IGetCountObserver {
+        private final String action;
         public GetCountObserver(String action) { this.action = action; }
 
         @Override
@@ -198,7 +201,7 @@ public class MainPresenter extends Presenter<MainView>{
         }
     }
 
-    public class IsFollowingObserver implements FollowService.IsFollowingObserver {
+    public class IsFollowingObserver implements IIsFollowingObserver {
 
         @Override
         public void handleSuccess(boolean isFollower) {

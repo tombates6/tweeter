@@ -28,7 +28,7 @@ public class RegisterPresenter extends AuthPresenter {
         // Intentionally, Use the java Base64 encoder so it is compatible with M4.
         String imageBytesBase64 = Base64.getEncoder().encodeToString(imageBytes);
 
-        registerService.register(firstName, lastName, alias, password, imageBytesBase64, new PresenterAuthObserver());
+        registerService.register(firstName, lastName, alias, password, imageBytesBase64, new AuthObserver());
     }
 
     public void validateRegistration(String firstName, String lastName, String alias, String password, BitmapDrawable imageToUpload
