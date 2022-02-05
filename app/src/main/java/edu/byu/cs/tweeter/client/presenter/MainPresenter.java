@@ -12,8 +12,7 @@ import edu.byu.cs.tweeter.client.model.service.AuthService;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.client.model.service.observer.IEmptySuccessObserver;
-import edu.byu.cs.tweeter.client.model.service.observer.IGetCountObserver;
-import edu.byu.cs.tweeter.client.model.service.observer.IIsFollowingObserver;
+import edu.byu.cs.tweeter.client.model.service.observer.ISingleParamSuccessObserver;
 import edu.byu.cs.tweeter.client.presenter.view.MainView;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -143,13 +142,13 @@ public class MainPresenter extends Presenter<MainView>{
         public abstract void success();
     }
 
-    public abstract class GetCountObserver implements IGetCountObserver {
+    public abstract class SingleParamSuccessObserver<T> implements ISingleParamSuccessObserver<T> {
         private final String action;
-        public GetCountObserver(String action) { this.action = action; }
+        public SingleParamSuccessObserver(String action) { this.action = action; }
 
         @Override
-        public void handleSuccess(int count) {
-            success(count);
+        public void handleSuccess(T resp) {
+            success(resp);
         }
 
         @Override
@@ -162,7 +161,7 @@ public class MainPresenter extends Presenter<MainView>{
             showError(action, exception);
         }
 
-        public abstract void success(int count);
+        public abstract void success(T resp);
     }
 
     public class LogoutObserver extends EmptySuccessObserver {
@@ -183,39 +182,30 @@ public class MainPresenter extends Presenter<MainView>{
         }
     }
 
-    public class GetFollowingCountObserver extends GetCountObserver {
+    public class GetFollowingCountObserver extends SingleParamSuccessObserver<Integer> {
         public GetFollowingCountObserver() { super("get following count"); }
 
         @Override
-        public void success(int count) {
+        public void success(Integer count) {
             view.setFollowingCount(count);
         }
     }
 
-    public class GetFollowersCountObserver extends GetCountObserver {
+    public class GetFollowersCountObserver extends SingleParamSuccessObserver<Integer> {
         public GetFollowersCountObserver() { super("get followers count"); }
 
         @Override
-        public void success(int count) {
+        public void success(Integer count) {
             view.setFollowersCount(count);
         }
     }
 
-    public class IsFollowingObserver implements IIsFollowingObserver {
+    public class IsFollowingObserver extends SingleParamSuccessObserver<Boolean> {
+        public IsFollowingObserver() { super("determine following relationship"); }
 
         @Override
-        public void handleSuccess(boolean isFollower) {
+        public void success(Boolean isFollower) {
             view.isFollower(isFollower);
-        }
-
-        @Override
-        public void handleFailure(String message) {
-            showFailure("determine following relationship", message);
-        }
-
-        @Override
-        public void handleException(Exception exception) {
-            showError("determine following relationship", exception);
         }
     }
 
