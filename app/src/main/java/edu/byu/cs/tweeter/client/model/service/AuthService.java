@@ -11,6 +11,7 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.RegisterTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.BackgroundTaskHandler;
 import edu.byu.cs.tweeter.client.model.service.observer.AuthObserver;
 import edu.byu.cs.tweeter.client.model.service.observer.BaseObserver;
+import edu.byu.cs.tweeter.client.model.service.observer.EmptySuccessObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -20,7 +21,7 @@ public class AuthService {
         runTask(loginTask);
     }
 
-    public void logout(AuthToken token, LogoutObserver observer) {
+    public void logout(AuthToken token, EmptySuccessObserver observer) {
         LogoutTask logoutTask = new LogoutTask(token, new LogoutHandler(observer));
         runTask(logoutTask);
     }
@@ -49,18 +50,14 @@ public class AuthService {
         }
     }
 
-    public interface LogoutObserver extends BaseObserver {
-        void handleSuccess();
-    }
-
     // LogoutHandler
-    private class LogoutHandler extends BackgroundTaskHandler<LogoutObserver> {
-        public LogoutHandler(LogoutObserver observer) {
+    private class LogoutHandler extends BackgroundTaskHandler<EmptySuccessObserver> {
+        public LogoutHandler(EmptySuccessObserver observer) {
             super(observer);
         }
 
         @Override
-        protected void handleSuccessMessage(LogoutObserver observer, Bundle data) {
+        protected void handleSuccessMessage(EmptySuccessObserver observer, Bundle data) {
             observer.handleSuccess();
             Cache.getInstance().clearCache();
         }

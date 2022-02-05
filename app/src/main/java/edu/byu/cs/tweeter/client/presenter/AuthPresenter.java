@@ -21,13 +21,13 @@ public abstract class AuthPresenter extends Presenter<AuthView>{
         @Override
         public void handleFailure(String message) {
             Log.e(LOG_TAG, message);
-            view.displayErrorMessage("Failed to " + subject + ": " + message);
+            view.displayErrorMessage("Failed to " + action + " : " + message);
         }
 
         @Override
         public void handleException(Exception exception) {
             Log.e(LOG_TAG, exception.getMessage());
-            view.displayErrorMessage("Failed to " + subject + " because of exception: " + exception.getMessage());
+            view.displayErrorMessage("Failed to " + action + " because of exception: " + exception.getMessage());
 
         }
     }

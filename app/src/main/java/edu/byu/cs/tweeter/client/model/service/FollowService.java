@@ -18,6 +18,8 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.PagedUserTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.BackgroundTaskHandler;
 import edu.byu.cs.tweeter.client.model.service.observer.BaseObserver;
+import edu.byu.cs.tweeter.client.model.service.observer.EmptySuccessObserver;
+import edu.byu.cs.tweeter.client.model.service.observer.GetCountObserver;
 import edu.byu.cs.tweeter.client.model.service.observer.PagedTaskObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -52,13 +54,13 @@ public class FollowService {
         runTask(isFollowerTask);
     }
 
-    public void follow(AuthToken authToken, User selectedUser, FollowUnfollowObserver observer) {
+    public void follow(AuthToken authToken, User selectedUser, EmptySuccessObserver observer) {
         FollowTask followTask = new FollowTask(authToken,
                 selectedUser, new FollowUnfollowHandler(observer));
         runTask(followTask);
     }
 
-    public void unfollow(AuthToken authToken, User selectedUser, FollowUnfollowObserver observer) {
+    public void unfollow(AuthToken authToken, User selectedUser, EmptySuccessObserver observer) {
         UnfollowTask unfollowTask = new UnfollowTask(authToken,
                 selectedUser, new FollowUnfollowHandler(observer));
         runTask(unfollowTask);
@@ -76,10 +78,6 @@ public class FollowService {
             boolean hasMorePages = data.getBoolean(GetFollowersTask.MORE_PAGES_KEY);
             observer.handleSuccess(followers, hasMorePages);
         }
-    }
-
-    public interface GetCountObserver extends BaseObserver {
-        void handleSuccess(int count);
     }
 
     private class GetCountHandler extends BackgroundTaskHandler<GetCountObserver> {
@@ -110,17 +108,13 @@ public class FollowService {
         }
     }
 
-    public interface FollowUnfollowObserver extends BaseObserver {
-        void handleSuccess();
-    }
-
-    private class FollowUnfollowHandler extends BackgroundTaskHandler<FollowUnfollowObserver> {
-        public FollowUnfollowHandler(FollowUnfollowObserver observer) {
+    private class FollowUnfollowHandler extends BackgroundTaskHandler<EmptySuccessObserver> {
+        public FollowUnfollowHandler(EmptySuccessObserver observer) {
             super(observer);
         }
 
         @Override
-        protected void handleSuccessMessage(FollowUnfollowObserver observer, Bundle data) {
+        protected void handleSuccessMessage(EmptySuccessObserver observer, Bundle data) {
             observer.handleSuccess();
         }
     }

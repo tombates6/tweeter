@@ -1,7 +1,5 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import android.util.Log;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -13,20 +11,17 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.AuthService;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
-import edu.byu.cs.tweeter.client.presenter.view.BaseView;
 import edu.byu.cs.tweeter.client.presenter.view.MainView;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainPresenter {
-    private static final String LOG_TAG = "MainActivity";
-    private MainView view;
-    private FollowService followService;
-    private StatusService statusService;
-    private AuthService authService;
+public class MainPresenter extends Presenter<MainView>{
+    private final FollowService followService;
+    private final StatusService statusService;
+    private final AuthService authService;
 
     public MainPresenter(MainView view) {
-        this.view = view;
+        super(view, "MainPresenter");
         this.followService = new FollowService();
         this.statusService = new StatusService();
         this.authService = new AuthService();
@@ -122,83 +117,84 @@ public class MainPresenter {
         return statusFormat.format(userFormat.parse(LocalDate.now().toString() + " " + LocalTime.now().toString().substring(0, 8)));
     }
 
-    public class LogoutObserver implements AuthService.LogoutObserver {
+
+    public abstract class EmptySuccessObserver implements edu.byu.cs.tweeter.client.model.service.observer.EmptySuccessObserver {
+        private String action;
+        public EmptySuccessObserver(String action) { this.action = action; }
 
         @Override
         public void handleSuccess() {
+            success();
+        }
+
+        @Override
+        public void handleFailure(String message) {
+            showFailure(action, message);
+        }
+
+        @Override
+        public void handleException(Exception exception) {
+            showError(action, exception);
+        }
+
+        public abstract void success();
+    }
+
+    public abstract class GetCountObserver implements edu.byu.cs.tweeter.client.model.service.observer.GetCountObserver {
+        private String action;
+        public GetCountObserver(String action) { this.action = action; }
+
+        @Override
+        public void handleSuccess(int count) {
+            success(count);
+        }
+
+        @Override
+        public void handleFailure(String message) {
+            showFailure(action, message);
+        }
+
+        @Override
+        public void handleException(Exception exception) {
+            showError(action, exception);
+        }
+
+        public abstract void success(int count);
+    }
+
+    public class LogoutObserver extends EmptySuccessObserver {
+        public LogoutObserver() { super("logout"); }
+
+        @Override
+        public void success() {
             view.logout();
         }
-
-        @Override
-        public void handleFailure(String message) {
-            Log.e(LOG_TAG, message);
-            view.displayErrorMessage("Failed to logout: " + message);
-        }
-
-        @Override
-        public void handleException(Exception exception) {
-            Log.e(LOG_TAG, exception.getMessage());
-            view.displayErrorMessage("Failed to logout because of exception: " + exception.getMessage());
-        }
     }
 
-    public class PostStatusObserver implements StatusService.PostStatusObserver {
+    public class PostStatusObserver extends EmptySuccessObserver {
+        public PostStatusObserver() { super("post status"); }
 
         @Override
-        public void handleSuccess() {
+        public void success() {
             view.post();
         }
-
-        @Override
-        public void handleFailure(String message) {
-            Log.e(LOG_TAG, message);
-            view.displayErrorMessage("Failed to post status: " + message);
-        }
-
-        @Override
-        public void handleException(Exception exception) {
-            Log.e(LOG_TAG, exception.getMessage());
-            view.displayErrorMessage("Failed to post status because of exception: " + exception.getMessage());
-        }
     }
 
-    public class GetFollowingCountObserver implements FollowService.GetCountObserver {
+    public class GetFollowingCountObserver extends GetCountObserver {
+        public GetFollowingCountObserver() { super("get following count"); }
 
         @Override
-        public void handleSuccess(int count) {
+        public void success(int count) {
             view.setFollowingCount(count);
         }
-
-        @Override
-        public void handleFailure(String message) {
-            Log.e(LOG_TAG, message);
-            view.displayErrorMessage("Failed to get following count: " + message);
-        }
-
-        @Override
-        public void handleException(Exception exception) {
-            Log.e(LOG_TAG, exception.getMessage());
-            view.displayErrorMessage("Failed to get following count because of exception: " + exception.getMessage());
-        }
     }
 
-    public class GetFollowersCountObserver implements FollowService.GetCountObserver {
+    public class GetFollowersCountObserver extends GetCountObserver {
+        public GetFollowersCountObserver() { super("get followers count"); }
 
         @Override
-        public void handleSuccess(int count) {
+        public void success(int count) {
             view.setFollowersCount(count);
-        }
-
-        @Override
-        public void handleFailure(String message) {
-            Log.e(LOG_TAG, message);
-            view.displayErrorMessage("Failed to get followers count: " + message);
-        }
-
-        @Override
-        public void handleException(Exception exception) {
-            Log.e(LOG_TAG, exception.getMessage());
-            view.displayErrorMessage("Failed to get followers count because of exception: " + exception.getMessage());
         }
     }
 
@@ -211,56 +207,32 @@ public class MainPresenter {
 
         @Override
         public void handleFailure(String message) {
-            Log.e(LOG_TAG, message);
-            view.displayErrorMessage("Failed to determine following relationship: " + message);
+            showFailure("determine following relationship", message);
         }
 
         @Override
         public void handleException(Exception exception) {
-            Log.e(LOG_TAG, exception.getMessage());
-            view.displayErrorMessage("Failed to determine following relationship because of exception: " + exception.getMessage());
+            showError("determine following relationship", exception);
         }
     }
 
-    public class UnfollowObserver implements FollowService.FollowUnfollowObserver {
+    public class UnfollowObserver extends EmptySuccessObserver {
+        public UnfollowObserver() { super("unfollow"); }
 
         @Override
-        public void handleSuccess() {
+        public void success() {
             updateSelectedUserFollowingAndFollowers();
             view.setFollowing(false);
         }
-
-        @Override
-        public void handleFailure(String message) {
-            Log.e(LOG_TAG, message);
-            view.displayErrorMessage("Failed to unfollow: " + message);
-        }
-
-        @Override
-        public void handleException(Exception exception) {
-            Log.e(LOG_TAG, exception.getMessage());
-            view.displayErrorMessage("Failed to unfollow because of exception: " + exception.getMessage());
-        }
     }
 
-    public class FollowObserver implements FollowService.FollowUnfollowObserver {
+    public class FollowObserver extends EmptySuccessObserver {
+        public FollowObserver() { super("follow"); }
 
         @Override
-        public void handleSuccess() {
+        public void success() {
             updateSelectedUserFollowingAndFollowers();
             view.setFollowing(true);
-        }
-
-        @Override
-        public void handleFailure(String message) {
-            Log.e(LOG_TAG, message);
-            view.displayErrorMessage("Failed to follow: " + message);
-        }
-
-        @Override
-        public void handleException(Exception exception) {
-            Log.e(LOG_TAG, exception.getMessage());
-            view.displayErrorMessage("Failed to follow because of exception: " + exception.getMessage());
         }
     }
 }

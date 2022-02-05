@@ -1,5 +1,4 @@
 package edu.byu.cs.tweeter.client.presenter;
-import android.util.Log;
 
 import java.util.List;
 
@@ -12,9 +11,11 @@ public abstract class PagedPresenter<T> extends Presenter<PageView<T>> {
     protected T lastItem;
     private boolean hasMorePages;
     private boolean isLoading = false;
+    private String action;
     
-    public PagedPresenter(PageView<T> view, String logTag, String subject) {
-        super(view, logTag, subject);
+    public PagedPresenter(PageView<T> view, String logTag, String action) {
+        super(view, logTag);
+        this.action = action;
     }
 
     public boolean hasMorePages() {
@@ -52,18 +53,16 @@ public abstract class PagedPresenter<T> extends Presenter<PageView<T>> {
 
         @Override
         public void handleFailure(String message) {
-            Log.e(LOG_TAG, message);
             isLoading = false;
             view.setLoadingFooter(false);
-            view.displayErrorMessage("Failed to get " + subject + ": " + message);
+            showFailure(action, message);
         }
 
         @Override
         public void handleException(Exception exception) {
-            Log.e(LOG_TAG, exception.getMessage());
             isLoading = false;
             view.setLoadingFooter(false);
-            view.displayErrorMessage("Failed to get " + subject + " because of exception: " + exception.getMessage());
+            showError(action, exception);
         }
     }
 }

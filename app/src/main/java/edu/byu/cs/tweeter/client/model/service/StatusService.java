@@ -12,6 +12,7 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.PagedStatusTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.PostStatusTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.BackgroundTaskHandler;
 import edu.byu.cs.tweeter.client.model.service.observer.BaseObserver;
+import edu.byu.cs.tweeter.client.model.service.observer.EmptySuccessObserver;
 import edu.byu.cs.tweeter.client.model.service.observer.PagedTaskObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -28,7 +29,7 @@ public class StatusService {
         runTask(getFeedTask);
     }
 
-    public void postStatus(AuthToken token, Status newStatus, PostStatusObserver observer) {
+    public void postStatus(AuthToken token, Status newStatus, EmptySuccessObserver observer) {
         PostStatusTask statusTask = new PostStatusTask(token, newStatus, new PostStatusHandler(observer));
         runTask(statusTask);
     }
@@ -49,18 +50,14 @@ public class StatusService {
         }
     }
 
-    public interface PostStatusObserver extends BaseObserver {
-        void handleSuccess();
-    }
-
     // PostStatusHandler
-    private class PostStatusHandler extends BackgroundTaskHandler<PostStatusObserver> {
-        public PostStatusHandler(PostStatusObserver observer) {
+    private class PostStatusHandler extends BackgroundTaskHandler<EmptySuccessObserver> {
+        public PostStatusHandler(EmptySuccessObserver observer) {
             super(observer);
         }
 
         @Override
-        protected void handleSuccessMessage(PostStatusObserver observer, Bundle data) {
+        protected void handleSuccessMessage(EmptySuccessObserver observer, Bundle data) {
             observer.handleSuccess();
         }
     }
