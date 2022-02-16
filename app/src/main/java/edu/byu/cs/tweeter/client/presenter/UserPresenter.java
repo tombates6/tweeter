@@ -39,7 +39,7 @@ public class UserPresenter extends Presenter<UserView> {
 
         @Override
         public void handleException(Exception exception) {
-            showError("get user's profile", exception);
+            showError("get user's profile", exception.getMessage());
         }
     }
 }

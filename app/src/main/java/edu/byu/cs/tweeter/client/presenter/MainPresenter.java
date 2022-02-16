@@ -19,13 +19,11 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class MainPresenter extends Presenter<MainView>{
     private final FollowService followService;
-    private final StatusService statusService;
     private final AuthService authService;
 
     public MainPresenter(MainView view) {
         super(view, "MainPresenter");
         this.followService = new FollowService();
-        this.statusService = new StatusService();
         this.authService = new AuthService();
     }
 
@@ -42,8 +40,21 @@ public class MainPresenter extends Presenter<MainView>{
     }
 
     public void postStatus(String post) throws ParseException {
-        Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
-        statusService.postStatus(Cache.getInstance().getCurrUserAuthToken(), newStatus, new PostStatusObserver());
+        Status newStatus = createStatus(post);
+        PostStatusObserver observer = createStatusObserver();
+        getStatusService().postStatus(Cache.getInstance().getCurrUserAuthToken(), newStatus, observer);
+    }
+
+    public StatusService getStatusService() {
+        return new StatusService();
+    }
+
+    public PostStatusObserver createStatusObserver() {
+        return new PostStatusObserver();
+    }
+
+    public Status createStatus(String post) throws ParseException {
+        return new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
     }
 
     public void logout() {
@@ -136,7 +147,7 @@ public class MainPresenter extends Presenter<MainView>{
 
         @Override
         public void handleException(Exception exception) {
-            showError(action, exception);
+            showError(action, exception.getMessage());
         }
 
         public abstract void success();
@@ -158,7 +169,7 @@ public class MainPresenter extends Presenter<MainView>{
 
         @Override
         public void handleException(Exception exception) {
-            showError(action, exception);
+            showError(action, exception.getMessage());
         }
 
         public abstract void success(T resp);

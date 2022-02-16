@@ -18,8 +18,8 @@ public abstract class Presenter<T extends BaseView> {
         view.displayErrorMessage("Failed to " + action + ": " + message);
     }
 
-    public void showError(String action, Exception ex) {
-        Log.e(LOG_TAG, ex.getMessage());
-        view.displayErrorMessage("Failed to " + action + " because of exception: " + ex.getMessage());
+    public void showError(String action, String ex) {
+        Log.e(LOG_TAG, ex);
+        view.displayErrorMessage("Failed to " + action + " because of exception: " + ex);
     }
 }

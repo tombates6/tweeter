@@ -62,7 +62,7 @@ public abstract class PagedPresenter<T> extends Presenter<PageView<T>> {
         public void handleException(Exception exception) {
             isLoading = false;
             view.setLoadingFooter(false);
-            showError(action, exception);
+            showError(action, exception.getMessage());
         }
     }
 }

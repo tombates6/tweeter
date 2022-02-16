@@ -25,7 +25,7 @@ public abstract class AuthPresenter extends Presenter<AuthView>{
 
         @Override
         public void handleException(Exception exception) {
-            showError(action, exception);
+            showError(action, exception.getMessage());
 
         }
     }
