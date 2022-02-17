@@ -77,7 +77,7 @@ public class MainPresenterTest {
                 observer.handleException(new Exception(exMsg));
                 return null;
             };
-            doAnswer(answer).when(statusService).postStatus(eq(null), any(), any());
+            doAnswer(answer).when(statusService).postStatus(any(), any(), any());
             presenter.postStatus(post);
             verify(statusService).postStatus(eq(null), eq(status), any(IEmptySuccessObserver.class));
             verify(presenter).showError(postAction, exMsg);
